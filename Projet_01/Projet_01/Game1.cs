@@ -1,4 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Threading;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -36,8 +39,11 @@ namespace Projet_01
         Rectangle fenetre;
         public static int maxX;
         public static int maxY;
+        public static int vitY=0, vitX=0;
+        public static Random nbRand = new Random();
+        public static double tempsDeVol = 0, tempsDeVolReel = 0;
 
-
+       
 
 
         public Game1()
@@ -79,18 +85,21 @@ namespace Projet_01
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            hero = new GameObject("avionHero.png",300, 300, 150, 96, true);
-            ennemi = new GameObject("wildcat-top.png",500,500,75,100, true);
+            
+            //Loader les items et leur attribuer de valeurs (position x, y, centre x, centre y)
+            hero = new GameObject(300, 300, 150, 96, true);
+            ennemi = new GameObject(1900,500,75,100, true);
             fond = new GameObject();
+            
+            // Initialiser la rotation pour les objets qui tournent
+            hero.rotationAngle = 0;
 
-            //screen = new GameObject();
+            // Loader les images
             fond.sprite = Content.Load<Texture2D>("fond.jpg");
-
             hero.sprite = Content.Load<Texture2D>("avionHero.png");
             ennemi.sprite = Content.Load<Texture2D>("wildcat-top.png");
 
-
-            hero.rotationAngle = 0;
+            
 
             // TODO: use this.Content to load your game content here
         }
@@ -155,7 +164,7 @@ namespace Projet_01
                 hero.position.X = 150;
             }
 
-            // rotation essais
+            // Rotation de l'avion
             if (Keyboard.GetState().IsKeyDown(Keys.Left))
             {
                 hero.rotationAngle -= 0.03f;
@@ -176,12 +185,90 @@ namespace Projet_01
 
             // TODO: Add your update logic here
             UpdateHero(); // un update pour le vaisseau
+            UpdateEnnemi();
             base.Update(gameTime);
         }
 
         ///
         public void UpdateHero()
         {
+
+        }
+        public void UpdateEnnemi()
+        {
+            /*if (tempsDeVolReel >= tempsDeVol)
+            {
+                if (nbRand.Next(0, 3) == 0)
+                {
+
+                    ennemi.vitesse.Y += nbRand.Next(-3,2);
+                    ennemi.vitesse.X += nbRand.Next(-3,2);
+                    tempsDeVol = 0.1; // en /60 de secondes
+                }
+                else if (nbRand.Next(0, 3) == 1)
+                {
+                    ennemi.vitesse.Y += nbRand.Next(-5, 5);
+                    ennemi.vitesse.X += nbRand.Next(-6, 5);
+                    tempsDeVol = 0.1;
+                }
+                else
+                {
+                    ennemi.vitesse.Y += nbRand.Next(-1, 1);
+                    ennemi.vitesse.X += nbRand.Next(-2, 1);
+                    tempsDeVol = 0.1;
+                }
+            tempsDeVolReel +=0.1;
+            }
+            else
+            {
+                tempsDeVol = 0;
+                tempsDeVolReel = 0;
+            } */
+
+            //Vitesse Y pour la prochaine seconde
+            
+            if (tempsDeVolReel >= tempsDeVol)
+            {
+                tempsDeVol = 20;
+                vitY = nbRand.Next(-1, 2);
+                if ( vitY == -1)
+                {
+                    ennemi.vitesse.Y -= 0.4f; // réduit de 0.1
+                    
+                }
+                else if (vitY == 0)
+                {
+                    ennemi.vitesse.Y -= 0.0f; // reste pareil
+                    
+                }
+                else if (vitY == 1)
+                {
+                    ennemi.vitesse.Y += 0.4f; // Augmente de 0.1
+                
+                }
+                vitX = nbRand.Next(-1, 2);
+                if ( vitX == -1)
+                {
+                    ennemi.vitesse.X -= 0.05f;
+                }
+                else if (vitX == 0)
+                {
+                    ennemi.vitesse.Y -= 0.0f; // reste pareil
+
+                }
+                else if (vitX == 1)
+                {
+                    ennemi.vitesse.Y += 0.05f; // Augmente de 0.1
+
+                }
+            }
+            else
+            {
+                tempsDeVol = 0;
+                tempsDeVolReel = 0;
+            }
+            
+            ennemi.position += ennemi.vitesse;
 
         }
 
