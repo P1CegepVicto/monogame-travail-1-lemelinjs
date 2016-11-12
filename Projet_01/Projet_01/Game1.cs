@@ -147,21 +147,21 @@ namespace Projet_01
 
             //Détection des limites
 
-            if ((hero.position.Y) > (maxY-96))
+            if ((hero.position.Y) > (maxY-(hero.Height/2)))
             {
-                hero.position.Y = -96;
+                hero.position.Y = (maxY - (hero.Height / 2));
             }
-            else if ((hero.position.Y) < -96)
+            else if ((hero.position.Y) < (hero.Height / 2))
             {
-                hero.position.Y = maxY-96;
+                hero.position.Y = (hero.Height / 2);
             }
-            if ((hero.position.X + 300) >= (int)(maxX/2))
+            if (hero.position.X + (hero.Width/2) >= maxX)
             {
                 hero.position.X -= 5;
             }
-            else if (hero.position.X < 150)
+            else if (hero.position.X < (hero.Width/2))
             {
-                hero.position.X = 150;
+                hero.position.X = hero.Width/2;
             }
 
             // Rotation de l'avion
@@ -171,8 +171,9 @@ namespace Projet_01
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Right))
             {
-                hero.rotationAngle += 0.03f;
+                hero.rotationAngle += -0.03f;
             }
+            /* pas de limitation pour le moment
             if (hero.rotationAngle < -1.0f)
             {
                 hero.rotationAngle = -1.0f;
@@ -181,7 +182,7 @@ namespace Projet_01
             {
                 hero.rotationAngle = 1.2f;
             }
-
+            */
 
             // TODO: Add your update logic here
             UpdateHero(); // un update pour le vaisseau
@@ -233,17 +234,41 @@ namespace Projet_01
                 vitY = nbRand.Next(-1, 2);
                 if ( vitY == -1)
                 {
-                    ennemi.vitesse.Y -= 0.4f; // réduit de 0.1
+                    if (ennemi.position.Y > hero.position.Y)// on va vers l'Héro
+                    {
+                         ennemi.vitesse.Y -= 0.4f; 
+                    }
+                    else
+                    {
+                        ennemi.vitesse.Y += 0.4f; 
+                    }
                     
                 }
-                else if (vitY == 0)
+                else if (vitY == 0) // Même si l'action est neutre, je met qqch au cas 
+                    //ou je voudrais changer
                 {
-                    ennemi.vitesse.Y -= 0.0f; // reste pareil
+                    if (ennemi.position.Y > hero.position.Y)
+                    {
+                       ennemi.vitesse.Y -= 0.0f; // reste pareil 
+                    }
+                    else
+                    {
+                        ennemi.vitesse.Y -= 0.0f; // reste pareil      
+                    }
+                    
                     
                 }
                 else if (vitY == 1)
                 {
-                    ennemi.vitesse.Y += 0.4f; // Augmente de 0.1
+                    if (ennemi.position.Y < hero.position.Y) // on s'éloigne du héro
+                    {
+                        ennemi.vitesse.Y += 0.2f;
+                    }
+                    else
+                    {
+                        ennemi.vitesse.Y -= 0.2f;
+                    }
+                    
                 
                 }
                 vitX = nbRand.Next(-1, 2);

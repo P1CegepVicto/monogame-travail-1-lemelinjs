@@ -59,6 +59,7 @@ class GameObject
             return rectColision;
         }
 
+
         public void Position(int x, int y)
         {
             this.position.X = x;
