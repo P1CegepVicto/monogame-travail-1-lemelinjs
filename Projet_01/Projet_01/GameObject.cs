@@ -68,7 +68,9 @@ class GameObject
             this.position.Y = y;
         }
 
+        public void InScreen(Rectangle fenetre)
         {
+            //Gérer ici les déplacements en fonction de la fenêtre
         }
 
 
