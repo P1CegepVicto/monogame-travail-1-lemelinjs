@@ -68,6 +68,9 @@ class GameObject
             this.position.Y = y;
         }
 
+        {
+        }
+
 
         public int Width { get; internal set; }
         public int Height { get; internal set; }

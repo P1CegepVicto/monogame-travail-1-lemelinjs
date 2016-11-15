@@ -196,7 +196,7 @@ namespace Projet_01
         ///
         public void UpdateHero()
         {
-
+            hero.InScreen(fenetre);
         }
         public void UpdateEnnemi()
         {
