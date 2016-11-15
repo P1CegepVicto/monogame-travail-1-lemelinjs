@@ -147,7 +147,7 @@ namespace Projet_01
 
             //Détection des limites
 
-            if ((hero.position.Y) > (maxY-(hero.Height/2)))
+            /*if ((hero.position.Y) > (maxY-(hero.Height/2)))
             {
                 hero.position.Y = (maxY - (hero.Height / 2));
             }
@@ -162,12 +162,15 @@ namespace Projet_01
             else if (hero.position.X < (hero.Width/2))
             {
                 hero.position.X = hero.Width/2;
-            }
+            }*/
+
+            InScreen("hero");
+            InScreen("ennemi");
 
             // Rotation de l'avion
             if (Keyboard.GetState().IsKeyDown(Keys.Left))
             {
-                hero.rotationAngle -= 0.03f;
+                hero.rotationAngle += 0.03f;
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Right))
             {
@@ -197,37 +200,7 @@ namespace Projet_01
         }
         public void UpdateEnnemi()
         {
-            /*if (tempsDeVolReel >= tempsDeVol)
-            {
-                if (nbRand.Next(0, 3) == 0)
-                {
-
-                    ennemi.vitesse.Y += nbRand.Next(-3,2);
-                    ennemi.vitesse.X += nbRand.Next(-3,2);
-                    tempsDeVol = 0.1; // en /60 de secondes
-                }
-                else if (nbRand.Next(0, 3) == 1)
-                {
-                    ennemi.vitesse.Y += nbRand.Next(-5, 5);
-                    ennemi.vitesse.X += nbRand.Next(-6, 5);
-                    tempsDeVol = 0.1;
-                }
-                else
-                {
-                    ennemi.vitesse.Y += nbRand.Next(-1, 1);
-                    ennemi.vitesse.X += nbRand.Next(-2, 1);
-                    tempsDeVol = 0.1;
-                }
-            tempsDeVolReel +=0.1;
-            }
-            else
-            {
-                tempsDeVol = 0;
-                tempsDeVolReel = 0;
-            } */
-
-            //Vitesse Y pour la prochaine seconde
-            
+            //Vitesse Y pour la prochaine x/60 seconde (tempsDeVol)
             if (tempsDeVolReel >= tempsDeVol)
             {
                 tempsDeVol = 20;
@@ -295,7 +268,55 @@ namespace Projet_01
             
             ennemi.position += ennemi.vitesse;
 
+
         }
+
+        public void InScreen(string personnage)
+        {
+            float positionY = 0, positionX  = 0;
+            int height = 0, width = 0;
+            if (personnage == "hero")
+            {
+                positionX = hero.position.X;
+                positionY = hero.position.Y;
+                height = hero.Height;
+                width = hero.Width;
+            }
+            else
+            {
+                positionX = ennemi.position.X;
+                positionY = ennemi.position.Y;
+                height = ennemi.Height;
+                width = ennemi.Width;
+            }
+            if ((positionY) > (maxY - (height / 2)))
+            {
+                positionY = (maxY - (height / 2));
+            }
+            else if ((positionY) < (height / 2))
+            {
+                positionY= (height/ 2);
+            }
+            if (positionX + (width/ 2) >= maxX)
+            {
+                positionX -= 5;
+            }
+            else if (positionX< (width / 2))
+            {
+                positionX = hero.Width / 2;
+            }
+            if (personnage == "hero")
+            {
+                hero.position.X = positionX;
+                hero.position.Y = positionY;
+            }
+            else
+            {
+                ennemi.position.X = positionX;
+                ennemi.position.Y = positionY;
+            }
+        }
+
 
         /// <summary>
         /// This is called when the game should draw itself.

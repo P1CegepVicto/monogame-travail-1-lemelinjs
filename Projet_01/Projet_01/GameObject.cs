@@ -45,6 +45,8 @@ class GameObject
             this.estVivant = true;
         }
 
+        
+
         /// <summary>
         /// Pour connaitre l'endoit de la colision et la rencontre des corps
         /// </summary>
