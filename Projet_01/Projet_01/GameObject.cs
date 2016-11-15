@@ -45,8 +45,6 @@ class GameObject
             this.estVivant = true;
         }
 
-        
-
         /// <summary>
         /// Pour connaitre l'endoit de la colision et la rencontre des corps
         /// </summary>
@@ -71,6 +69,22 @@ class GameObject
         public void InScreen(Rectangle fenetre)
         {
             //Gérer ici les déplacements en fonction de la fenêtre
+            if ((this.position.Y) > (1000- (this.Height / 2)))
+            {
+                this.position.Y = (1000 - (this.Height / 2));
+            }
+            else if ((this.position.Y)< (this.Height / 2))
+            {
+                this.position.Y = (this.Height / 2);
+            }
+            if (this.position.X+ (this.Width / 2) >= 1900)
+            {
+                this.position.X -= 5;
+            }
+            else if (this.position.X < (this.Width / 2))
+            {
+                this.position.X = this.Width / 2;
+            }
         }
 
 

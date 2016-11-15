@@ -37,6 +37,7 @@ namespace Projet_01
         GameObject fond;
         GameObject screen;
         Rectangle fenetre;
+
         public static int maxX;
         public static int maxY;
         public static int vitY=0, vitX=0;
@@ -164,8 +165,8 @@ namespace Projet_01
                 hero.position.X = hero.Width/2;
             }*/
 
-            InScreen("hero");
-            InScreen("ennemi");
+            //InScreen("hero");
+           // InScreen("ennemi");
 
             // Rotation de l'avion
             if (Keyboard.GetState().IsKeyDown(Keys.Left))
