@@ -33,13 +33,12 @@ namespace Projet_01
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         GameObject hero;
-        GameObject ennemi;
+        GameObject ennemi, missileEnnemi1;
         GameObject fond;
         GameObject screen;
         Rectangle fenetre;
 
-        public static int maxX;
-        public static int maxY;
+        public static int maxX, maxY;
         public static int vitY=0, vitX=0;
         public static Random nbRand = new Random();
         public static double tempsDeVol = 0, tempsDeVolReel = 0;
@@ -71,8 +70,8 @@ namespace Projet_01
             maxX = graphics.GraphicsDevice.DisplayMode.Width;
 
             // Met toi en plein écran
-            this.graphics.ToggleFullScreen();
-            //this.graphics.ApplyChanges();
+            //this.graphics.ToggleFullScreen();
+            this.graphics.ApplyChanges();
 
             fenetre = new Rectangle(0, 0, maxX, maxY);
             base.Initialize();
@@ -89,18 +88,21 @@ namespace Projet_01
             
             //Loader les items et leur attribuer de valeurs (position x, y, centre x, centre y)
             hero = new GameObject(300, 300, 150, 96, true);
-            ennemi = new GameObject(1900,500,75,100, true);
+            ennemi = new GameObject(maxY -200,maxX/2,101,79, true);
+            missileEnnemi1 = new GameObject(ennemi.position.X,ennemi.position.Y,9,40,true);
             fond = new GameObject();
             
             // Initialiser la rotation pour les objets qui tournent
             hero.rotationAngle = 0;
+            ennemi.rotationAngle = 0;
 
             // Loader les images
             fond.sprite = Content.Load<Texture2D>("fond.jpg");
             hero.sprite = Content.Load<Texture2D>("avionHero.png");
             ennemi.sprite = Content.Load<Texture2D>("wildcat-top.png");
+            missileEnnemi1.sprite = Content.Load<Texture2D>("missileEnnemi.png");
 
-            
+
 
             // TODO: use this.Content to load your game content here
         }
@@ -143,30 +145,8 @@ namespace Projet_01
             }
             if (Keyboard.GetState().IsKeyDown(Keys.D))
             {
-                hero.position.X += 5;
+                hero.position.X += 5; 
             }
-
-            //Détection des limites
-
-            /*if ((hero.position.Y) > (maxY-(hero.Height/2)))
-            {
-                hero.position.Y = (maxY - (hero.Height / 2));
-            }
-            else if ((hero.position.Y) < (hero.Height / 2))
-            {
-                hero.position.Y = (hero.Height / 2);
-            }
-            if (hero.position.X + (hero.Width/2) >= maxX)
-            {
-                hero.position.X -= 5;
-            }
-            else if (hero.position.X < (hero.Width/2))
-            {
-                hero.position.X = hero.Width/2;
-            }*/
-
-            //InScreen("hero");
-           // InScreen("ennemi");
 
             // Rotation de l'avion
             if (Keyboard.GetState().IsKeyDown(Keys.Left))
@@ -177,16 +157,6 @@ namespace Projet_01
             {
                 hero.rotationAngle += -0.03f;
             }
-            /* pas de limitation pour le moment
-            if (hero.rotationAngle < -1.0f)
-            {
-                hero.rotationAngle = -1.0f;
-            }
-            if (hero.rotationAngle > 1.2f)
-            {
-                hero.rotationAngle = 1.2f;
-            }
-            */
 
             // TODO: Add your update logic here
             UpdateHero(); // un update pour le vaisseau
@@ -201,6 +171,7 @@ namespace Projet_01
         }
         public void UpdateEnnemi()
         {
+            ennemi.InScreen(fenetre);
             //Vitesse Y pour la prochaine x/60 seconde (tempsDeVol)
             if (tempsDeVolReel >= tempsDeVol)
             {
@@ -210,11 +181,11 @@ namespace Projet_01
                 {
                     if (ennemi.position.Y > hero.position.Y)// on va vers l'Héro
                     {
-                         ennemi.vitesse.Y -= 0.4f; 
+                         ennemi.vitesse.Y -= 0.5f;
                     }
                     else
                     {
-                        ennemi.vitesse.Y += 0.4f; 
+                        ennemi.vitesse.Y += 0.5f;
                     }
                     
                 }
@@ -227,8 +198,9 @@ namespace Projet_01
                     }
                     else
                     {
-                        ennemi.vitesse.Y -= 0.0f; // reste pareil      
+                        ennemi.vitesse.Y -= 0.0f; // reste pareil    
                     }
+                
                     
                     
                 }
@@ -237,18 +209,28 @@ namespace Projet_01
                     if (ennemi.position.Y < hero.position.Y) // on s'éloigne du héro
                     {
                         ennemi.vitesse.Y += 0.2f;
-                    }
+
+                }
                     else
                     {
                         ennemi.vitesse.Y -= 0.2f;
-                    }
+                }
                     
                 
                 }
                 vitX = nbRand.Next(-1, 2);
                 if ( vitX == -1)
                 {
-                    ennemi.vitesse.X -= 0.05f;
+                    if (ennemi.position.X > hero.position.X)
+                    {
+                        ennemi.vitesse.X -= 0.05f;
+                        
+                    }
+                    else
+                    {
+                        ennemi.vitesse.X += 0.05f;
+                    }
+                    
                 }
                 else if (vitX == 0)
                 {
@@ -257,7 +239,14 @@ namespace Projet_01
                 }
                 else if (vitX == 1)
                 {
-                    ennemi.vitesse.Y += 0.05f; // Augmente de 0.1
+                    if (ennemi.position.X > hero.position.X)
+                    {
+                        ennemi.vitesse.X -= 0.02f;
+                    }
+                    else
+                    {
+                        ennemi.vitesse.X += 0.02f;
+                    }
 
                 }
             }
@@ -268,55 +257,29 @@ namespace Projet_01
             }
             
             ennemi.position += ennemi.vitesse;
+            // Vérifier si l'ennemi est à droite ou à gauche pour mettre le missile du bon côté
+            // de l'avion et dans la bonne direction
+            if (ennemi.position.X > hero.position.X)
+            {
+
+                missileEnnemi1.position.X = ennemi.position.X - 22;
+                missileEnnemi1.position.Y = ennemi.position.Y + 30;
+                ennemi.rotationAngle = 0f;
+                missileEnnemi1.rotationAngle = 3.1416F;
+            }
+            else
+            {
+                missileEnnemi1.position.X = ennemi.position.X + 22;
+                missileEnnemi1.position.Y = ennemi.position.Y - 30;
+                missileEnnemi1.rotationAngle = 0f;
+                ennemi.rotationAngle = 3.1416f;
+            }
+           
 
 
         }
 
-        public void InScreen(string personnage)
-        {
-            float positionY = 0, positionX  = 0;
-            int height = 0, width = 0;
-            if (personnage == "hero")
-            {
-                positionX = hero.position.X;
-                positionY = hero.position.Y;
-                height = hero.Height;
-                width = hero.Width;
-            }
-            else
-            {
-                positionX = ennemi.position.X;
-                positionY = ennemi.position.Y;
-                height = ennemi.Height;
-                width = ennemi.Width;
-            }
-            if ((positionY) > (maxY - (height / 2)))
-            {
-                positionY = (maxY - (height / 2));
-            }
-            else if ((positionY) < (height / 2))
-            {
-                positionY= (height/ 2);
-            }
-            if (positionX + (width/ 2) >= maxX)
-            {
-                positionX -= 5;
-            }
-            else if (positionX< (width / 2))
-            {
-                positionX = hero.Width / 2;
-            }
-            if (personnage == "hero")
-            {
-                hero.position.X = positionX;
-                hero.position.Y = positionY;
-            }
-            else
-            {
-                ennemi.position.X = positionX;
-                ennemi.position.Y = positionY;
-            }
-        }
+        
 
 
         /// <summary>
@@ -331,8 +294,16 @@ namespace Projet_01
             spriteBatch.Begin();
             spriteBatch.Draw(fond.sprite, new Rectangle(0, 0, maxX,maxY), Color.White);
             //spriteBatch.Draw(hero.sprite, hero.position, Color.White);
-            spriteBatch.Draw(hero.sprite,hero.position, null, Color.White, hero.rotationAngle, hero.origine, 1.0f, SpriteEffects.None, 0f);
-            spriteBatch.Draw(ennemi.sprite, ennemi.position, Color.White);
+
+            // Sprite du héro
+            spriteBatch.Draw(hero.sprite,hero.position, null, Color.White, hero.rotationAngle, hero.origine, 
+                1.0f, SpriteEffects.None, 0f);
+            // Sprite de l'ennemi
+            spriteBatch.Draw(ennemi.sprite, ennemi.position,null, Color.White, ennemi.rotationAngle, ennemi.origine, 
+                1.0f, SpriteEffects.None, 0f);
+            // Sprite du missile de l'ennemi
+            spriteBatch.Draw(missileEnnemi1.sprite, missileEnnemi1.position, null, Color.White, 
+                missileEnnemi1.rotationAngle, missileEnnemi1.origine, 1.0f, SpriteEffects.None, 0f);
 
 
 

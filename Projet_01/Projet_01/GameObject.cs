@@ -22,8 +22,8 @@ class GameObject
         public Rectangle rectColision = new Rectangle();
 
 
-        public GameObject(int positionX, int positionY, int origineX, 
-            int origineY, bool estVivant)
+        public GameObject(float positionX, float positionY, float origineX, 
+            float origineY, bool estVivant)
         {
             //this.sprite = new Game1().Content.Load<Texture2D>(lienImage); //encore en erreur
             this.position.X = positionX;
@@ -37,7 +37,7 @@ class GameObject
             //this.sprite = new Game1().Content.Load<Texture2D>(lienImage); // Encore en erreur
 
         }
-        public GameObject(int positionX, int positionY, bool estVivant)
+        public GameObject(float positionX, float positionY, bool estVivant)
         {
            // this.sprite = new Game1().Content.Load<Texture2D>(lienImage);//Encore en erreur
             this.position.X = positionX;
@@ -60,7 +60,7 @@ class GameObject
         }
 
 
-        public void Position(int x, int y)
+        public void Position(float x, float y)
         {
             this.position.X = x;
             this.position.Y = y;
@@ -69,21 +69,21 @@ class GameObject
         public void InScreen(Rectangle fenetre)
         {
             //Gérer ici les déplacements en fonction de la fenêtre
-            if ((this.position.Y) > (1000- (this.Height / 2)))
+            if ((this.position.Y) > (fenetre.Height - (this.Height/2)))
             {
-                this.position.Y = (1000 - (this.Height / 2));
+                this.position.Y = (fenetre.Height - (this.Height/2));
             }
-            else if ((this.position.Y)< (this.Height / 2))
+            else if ((this.position.Y-(this.Height/2)< 0))
             {
-                this.position.Y = (this.Height / 2);
+                this.position.Y = 0 + (this.Height / 2);
             }
-            if (this.position.X+ (this.Width / 2) >= 1900)
+            if (this.position.X + (this.Width/2) > fenetre.Width)
             {
-                this.position.X -= 5;
+                this.position.X = fenetre.Width - (this.Width / 2);
             }
-            else if (this.position.X < (this.Width / 2))
+            else if (this.position.X - (this.Width/2)< 0)
             {
-                this.position.X = this.Width / 2;
+                this.position.X = 0 + (this.Width / 2);
             }
         }
 
