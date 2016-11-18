@@ -18,6 +18,7 @@ class GameObject
         public Vector2 origine;
         public Vector2 vitesse;
         public float rotationAngle;
+        public bool changementDirection;
 
         public Rectangle rectColision = new Rectangle();
 
@@ -30,7 +31,7 @@ class GameObject
             this.position.Y = positionY;
             this.origine.X = origineX;
             this.origine.Y = origineY;
-            this.estVivant = true;
+            this.estVivant = estVivant;
         }
         public GameObject()
         {
@@ -60,35 +61,26 @@ class GameObject
         }
 
 
-        public void Position(float x, float y)
-        {
-            this.position.X = x;
-            this.position.Y = y;
-        }
-
-        public void InScreen(Rectangle fenetre)
+        public void InScreen(Rectangle cetteFenetre)
         {
             //Gérer ici les déplacements en fonction de la fenêtre
-            if ((this.position.Y) > (fenetre.Height - (this.Height/2)))
+            if ((this.position.Y) > (cetteFenetre.Height - (this.origine.Y)))
             {
-                this.position.Y = (fenetre.Height - (this.Height/2));
+                this.position.Y = (cetteFenetre.Height - (this.sprite.Height/2));
             }
-            else if ((this.position.Y-(this.Height/2)< 0))
+            else if ((this.position.Y-(this.sprite.Height/2)< 0))
             {
-                this.position.Y = 0 + (this.Height / 2);
+                this.position.Y = 0 + (this.sprite.Height / 2);
             }
-            if (this.position.X + (this.Width/2) > fenetre.Width)
+            if (this.position.X + (this.sprite.Width/2) > cetteFenetre.Width)
             {
-                this.position.X = fenetre.Width - (this.Width / 2);
+                this.position.X = cetteFenetre.Width - (this.sprite.Width / 2);
             }
-            else if (this.position.X - (this.Width/2)< 0)
+            else if (this.position.X - (this.sprite.Width/2)< 0)
             {
-                this.position.X = 0 + (this.Width / 2);
+                this.position.X = 0 + (this.sprite.Width / 2);
             }
         }
-
-
-        public int Width { get; internal set; }
-        public int Height { get; internal set; }
+        
     }
 }

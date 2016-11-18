@@ -32,7 +32,7 @@ namespace Projet_01
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        GameObject hero;
+        GameObject hero, heroEnFeu;
         GameObject ennemi, missileEnnemi1;
         GameObject fond;
         GameObject screen;
@@ -70,8 +70,8 @@ namespace Projet_01
             maxX = graphics.GraphicsDevice.DisplayMode.Width;
 
             // Met toi en plein écran
-            //this.graphics.ToggleFullScreen();
-            this.graphics.ApplyChanges();
+            this.graphics.ToggleFullScreen();
+            //this.graphics.ApplyChanges();
 
             fenetre = new Rectangle(0, 0, maxX, maxY);
             base.Initialize();
@@ -88,17 +88,20 @@ namespace Projet_01
             
             //Loader les items et leur attribuer de valeurs (position x, y, centre x, centre y)
             hero = new GameObject(300, 300, 150, 96, true);
+            heroEnFeu = new GameObject(hero.position.X, hero.position.Y,150,96, false);
             ennemi = new GameObject(maxY -200,maxX/2,101,79, true);
-            missileEnnemi1 = new GameObject(ennemi.position.X,ennemi.position.Y,9,40,true);
+            missileEnnemi1 = new GameObject(ennemi.position.X,ennemi.position.Y,9,40,false);
             fond = new GameObject();
             
-            // Initialiser la rotation pour les objets qui tournent
+            // Intialiser propriétés dans l'espace 
+            ennemi.changementDirection = true;
             hero.rotationAngle = 0;
             ennemi.rotationAngle = 0;
 
             // Loader les images
             fond.sprite = Content.Load<Texture2D>("fond.jpg");
             hero.sprite = Content.Load<Texture2D>("avionHero.png");
+            heroEnFeu.sprite = Content.Load<Texture2D>("avionHeroFeu.png");
             ennemi.sprite = Content.Load<Texture2D>("wildcat-top.png");
             missileEnnemi1.sprite = Content.Load<Texture2D>("missileEnnemi.png");
 
@@ -126,41 +129,51 @@ namespace Projet_01
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || 
                 Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-            if (Keyboard.GetState().IsKeyDown(Keys.Up))
+            if (Keyboard.GetState().IsKeyDown(Keys.W))
             {
-                hero.position.Y -= 20;
+                hero.position.Y -= 40;
             }
-            if (Keyboard.GetState().IsKeyDown(Keys.Down))
+            if (Keyboard.GetState().IsKeyDown(Keys.S))
             {
-                hero.position.Y += 20;
+                hero.position.Y += 40;
             }
             if (Keyboard.GetState().IsKeyDown(Keys.A))
             {
-                hero.position.X -= 5;
+                hero.position.X -= 40;
             }
-            //Recule rapide
-            if (Keyboard.GetState().IsKeyDown(Keys.CapsLock))
-            {
-                hero.position.X -= 30;
-            }
+
             if (Keyboard.GetState().IsKeyDown(Keys.D))
             {
-                hero.position.X += 5; 
+                hero.position.X += 40; 
             }
 
             // Rotation de l'avion
             if (Keyboard.GetState().IsKeyDown(Keys.Left))
             {
-                hero.rotationAngle += 0.03f;
+                hero.rotationAngle += -0.1f;
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Right))
             {
-                hero.rotationAngle += -0.03f;
+                hero.rotationAngle += 0.1f;
             }
 
+            // Attaque de l'ennemi
+            if (Keyboard.GetState().IsKeyDown(Keys.Space))
+            {
+                if (!missileEnnemi1.estVivant)
+                {
+                    missileEnnemi1.vitesse.X = -10;
+                    missileEnnemi1.estVivant = true;
+                }
+               
+
+            }
+            
             // TODO: Add your update logic here
             UpdateHero(); // un update pour le vaisseau
             UpdateEnnemi();
+            UpdateMissile();
+            UpdateEnnemi(gameTime);
             base.Update(gameTime);
         }
 
@@ -168,14 +181,20 @@ namespace Projet_01
         public void UpdateHero()
         {
             hero.InScreen(fenetre);
+            if (missileEnnemi1.GetRect().Intersects(hero.GetRect()))
+            {
+                heroEnFeu.estVivant = true;
+            }
+
         }
         public void UpdateEnnemi()
         {
             ennemi.InScreen(fenetre);
             //Vitesse Y pour la prochaine x/60 seconde (tempsDeVol)
-            if (tempsDeVolReel >= tempsDeVol)
+            
+            if (ennemi.changementDirection == true)
             {
-                tempsDeVol = 20;
+                
                 vitY = nbRand.Next(-1, 2);
                 if ( vitY == -1)
                 {
@@ -223,12 +242,12 @@ namespace Projet_01
                 {
                     if (ennemi.position.X > hero.position.X)
                     {
-                        ennemi.vitesse.X -= 0.05f;
+                        ennemi.vitesse.X -= 0.5f;
                         
                     }
                     else
                     {
-                        ennemi.vitesse.X += 0.05f;
+                        ennemi.vitesse.X += 0.5f;
                     }
                     
                 }
@@ -241,45 +260,84 @@ namespace Projet_01
                 {
                     if (ennemi.position.X > hero.position.X)
                     {
-                        ennemi.vitesse.X -= 0.02f;
+                        ennemi.vitesse.X -= 0.2f;
                     }
                     else
                     {
-                        ennemi.vitesse.X += 0.02f;
+                        ennemi.vitesse.X += 0.2f;
                     }
 
                 }
             }
-            else
-            {
-                tempsDeVol = 0;
-                tempsDeVolReel = 0;
-            }
-            
+
             ennemi.position += ennemi.vitesse;
             // Vérifier si l'ennemi est à droite ou à gauche pour mettre le missile du bon côté
             // de l'avion et dans la bonne direction
             if (ennemi.position.X > hero.position.X)
             {
-
-                missileEnnemi1.position.X = ennemi.position.X - 22;
-                missileEnnemi1.position.Y = ennemi.position.Y + 30;
+                if (!missileEnnemi1.estVivant)
+                {
+                    missileEnnemi1.position.X = ennemi.position.X - 22;
+                    missileEnnemi1.position.Y = ennemi.position.Y + 30;
+                    missileEnnemi1.rotationAngle = 3.1416F;
+                }
+                
                 ennemi.rotationAngle = 0f;
-                missileEnnemi1.rotationAngle = 3.1416F;
+                
             }
             else
             {
-                missileEnnemi1.position.X = ennemi.position.X + 22;
-                missileEnnemi1.position.Y = ennemi.position.Y - 30;
-                missileEnnemi1.rotationAngle = 0f;
-                ennemi.rotationAngle = 3.1416f;
+                if (!missileEnnemi1.estVivant)
+                {
+                    missileEnnemi1.position.X = ennemi.position.X + 22;
+                    missileEnnemi1.position.Y = ennemi.position.Y - 30;
+                    missileEnnemi1.rotationAngle = 0f;
+                    ennemi.rotationAngle = 3.1416f;
+                }
             }
            
 
 
         }
 
-        
+        public void UpdateEnnemi(GameTime gameTime)
+        {
+            if (gameTime.TotalGameTime.Milliseconds % 3000 == 0)
+            {
+                ennemi.changementDirection = false;
+                
+            }
+            else
+            {
+                ennemi.changementDirection = true;
+              
+            }
+        }
+
+        public void UpdateMissile()
+        {
+            if (!missileEnnemi1.estVivant)
+            {
+                if (ennemi.position.X>hero.position.X)
+                {
+                    missileEnnemi1.vitesse.X = -20;
+                    missileEnnemi1.estVivant = true;
+                }
+                else
+                {
+                    missileEnnemi1.vitesse.X = +20;
+                    missileEnnemi1.estVivant = true;
+                }
+                
+            }
+
+            if (missileEnnemi1.position.X < 0 || missileEnnemi1.position.X > fenetre.Width)// AJOUTER UN OU POUR 
+            {
+                missileEnnemi1.estVivant = false;
+            }
+            missileEnnemi1.position += missileEnnemi1.vitesse;
+        }
+
 
 
         /// <summary>
@@ -295,17 +353,26 @@ namespace Projet_01
             spriteBatch.Draw(fond.sprite, new Rectangle(0, 0, maxX,maxY), Color.White);
             //spriteBatch.Draw(hero.sprite, hero.position, Color.White);
 
+
             // Sprite du héro
             spriteBatch.Draw(hero.sprite,hero.position, null, Color.White, hero.rotationAngle, hero.origine, 
                 1.0f, SpriteEffects.None, 0f);
+
+            // Sprite de feu
+            if (heroEnFeu.estVivant) // Si touché, mettre le feu
+            {
+                spriteBatch.Draw(heroEnFeu.sprite, hero.position, null, Color.White, hero.rotationAngle, 
+                hero.origine, 1.0f, SpriteEffects.None, 0f);
+                missileEnnemi1.estVivant = false;
+            }
+            
+
             // Sprite de l'ennemi
             spriteBatch.Draw(ennemi.sprite, ennemi.position,null, Color.White, ennemi.rotationAngle, ennemi.origine, 
                 1.0f, SpriteEffects.None, 0f);
             // Sprite du missile de l'ennemi
             spriteBatch.Draw(missileEnnemi1.sprite, missileEnnemi1.position, null, Color.White, 
                 missileEnnemi1.rotationAngle, missileEnnemi1.origine, 1.0f, SpriteEffects.None, 0f);
-
-
 
             spriteBatch.End();
             // TODO: Add your drawing code here
