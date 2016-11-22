@@ -51,14 +51,14 @@ namespace Projet_02
             }
             else if (this.position.X + (this.origine.X) > cetteFenetre.Width)
             {
-                this.position.X = cetteFenetre.Width + this.origine.X;
+                this.position.X = cetteFenetre.Width - this.origine.X;
             }
 
             if (this.position.Y - this.origine.Y < 0)
             {
                 this.position.Y = 0 + this.origine.Y;
             }
-            else if(this.position.Y + this.origine.Y> cetteFenetre.Height)
+            else if(this.position.Y + this.origine.Y > cetteFenetre.Height)
             {
                 this.position.Y = cetteFenetre.Height - this.origine.Y;
             }

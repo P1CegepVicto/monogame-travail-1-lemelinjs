@@ -37,6 +37,7 @@ namespace Projet_01
         GameObject fond;
         GameObject screen;
         Rectangle fenetre;
+       
 
         public static int maxX, maxY;
         public static int vitY=0, vitX=0;
@@ -92,7 +93,8 @@ namespace Projet_01
             ennemi = new GameObject(maxY -200,maxX/2,101,79, true);
             missileEnnemi1 = new GameObject(ennemi.position.X,ennemi.position.Y,9,40,false);
             fond = new GameObject();
-            
+           
+
             // Intialiser propriétés dans l'espace 
             ennemi.changementDirection = true;
             hero.rotationAngle = 0;
@@ -104,7 +106,7 @@ namespace Projet_01
             heroEnFeu.sprite = Content.Load<Texture2D>("avionHeroFeu.png");
             ennemi.sprite = Content.Load<Texture2D>("wildcat-top.png");
             missileEnnemi1.sprite = Content.Load<Texture2D>("missileEnnemi.png");
-
+     
 
 
             // TODO: use this.Content to load your game content here
@@ -350,7 +352,7 @@ namespace Projet_01
             GraphicsDevice.Clear(Color.CornflowerBlue);
             // L'objet qui permet d'afficher toutes les images 
             spriteBatch.Begin();
-            spriteBatch.Draw(fond.sprite, new Rectangle(0, 0, maxX,maxY), Color.White);
+            //spriteBatch.Draw(fond.sprite, new Rectangle(0, 0, maxX,maxY), Color.White);
             //spriteBatch.Draw(hero.sprite, hero.position, Color.White);
 
 
@@ -373,6 +375,7 @@ namespace Projet_01
             // Sprite du missile de l'ennemi
             spriteBatch.Draw(missileEnnemi1.sprite, missileEnnemi1.position, null, Color.White, 
                 missileEnnemi1.rotationAngle, missileEnnemi1.origine, 1.0f, SpriteEffects.None, 0f);
+           
 
             spriteBatch.End();
             // TODO: Add your drawing code here

@@ -19,6 +19,7 @@ class GameObject
         public Vector2 vitesse;
         public float rotationAngle;
         public bool changementDirection;
+        
 
         public Rectangle rectColision = new Rectangle();
 

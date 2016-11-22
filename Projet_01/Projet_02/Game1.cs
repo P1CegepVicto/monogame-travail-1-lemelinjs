@@ -19,6 +19,7 @@ namespace Projet_02
         GameObject hero;
         GameObject[] ennemi;
         GameObject[] missile;
+        SpriteFont font;
 
         public Game1()
         {
@@ -58,6 +59,10 @@ namespace Projet_02
             hero = new GameObject(nombre.Next(0,fenetre.Width),
                 nombre.Next(0, fenetre.Height), true);
             hero.sprite = Content.Load<Texture2D>("avionHero.png");
+            // Le centre de l'image
+            hero.origine.X = hero.sprite.Width/2;
+            hero.origine.Y = hero.sprite.Height/2;
+
             hero.angleRotation = 0f;
 
             // Le fond
@@ -80,8 +85,13 @@ namespace Projet_02
                 ennemi[i] = new GameObject(nombre.Next(0, fenetre.Width),
                 nombre.Next(0, fenetre.Height), true);
                 ennemi[i].sprite = Content.Load<Texture2D>("ennemi" + (i+1) + ".png");
+                ennemi[i].origine.X = ennemi[i].sprite.Width/2;
+                ennemi[i].origine.Y = ennemi[i].sprite.Height / 2;
+
             }
 
+            // Le texte
+            font = Content.Load<SpriteFont>("Font");
             // TODO: use this.Content to load your game content here
         }
 
@@ -104,10 +114,85 @@ namespace Projet_02
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+          if (Keyboard.GetState().IsKeyDown(Keys.W))
+                {
+                    hero.position.Y -= 40;
+                }
+                if (Keyboard.GetState().IsKeyDown(Keys.S))
+                {
+                    hero.position.Y += 40;
+                }
+                if (Keyboard.GetState().IsKeyDown(Keys.A))
+                {
+                    hero.position.X -= 40;
+                }
+
+                if (Keyboard.GetState().IsKeyDown(Keys.D))
+                {
+                    hero.position.X += 40;
+                }
+
+                // Rotation de l'avion
+                if (Keyboard.GetState().IsKeyDown(Keys.Left))
+                {
+                    hero.angleRotation += -0.1f;
+                }
+                if (Keyboard.GetState().IsKeyDown(Keys.Right))
+                {
+                    hero.angleRotation += 0.1f;
+                }
+
 
             // TODO: Add your update logic here
-
+            UpdateHero();
+            UpdateEnnemi();
             base.Update(gameTime);
+        }
+
+        public void UpdateHero()
+        {
+            hero.InScreen(fenetre);
+        }
+
+        public void UpdateEnnemi()
+        {
+            // Ennemi dans l'écran Réapparait n'importe où dans l'écran
+            if (ennemi[1].position.X < 0 || ennemi[1].position.X > fenetre.Width || 
+                ennemi[1].position.Y < 0 || ennemi[1].position.Y > fenetre.Height )
+            {
+                ennemi[1].position.X = nombre.Next(0, fenetre.Width);
+                ennemi[1].position.Y = nombre.Next(0, fenetre.Height);
+                ennemi[1].vitesse.X = 0;
+                ennemi[1].vitesse.Y = 0;
+
+            }
+//            Se bouger en fonction du héro
+            for (int i = 0; i < ennemi.Length; i++)
+            {
+                if (ennemi[i].position.X > hero.position.X)
+                {
+                    ennemi[i].vitesse.X -= 0.05f;
+                    ennemi[i].angleRotation = 3.1416f;
+                }
+                else
+                {
+                    ennemi[i].vitesse.X += 0.05f;
+                    ennemi[i].angleRotation = 0f;
+                }
+                if (ennemi[i].position.Y > hero.position.Y)
+                {
+                    ennemi[i].vitesse.Y -= 0.05f;
+
+                }
+                else
+                {
+                    ennemi[i].vitesse.Y += 0.05f;
+
+
+                }
+                ennemi[i].position += ennemi[i].vitesse;
+            }
+           
         }
 
         /// <summary>
@@ -131,6 +216,7 @@ namespace Projet_02
                 nuage[i].angleRotation, nuage[i].origine, 1.0f, SpriteEffects.None, 0f);
             }
 
+            // Le héro
             spriteBatch.Draw(hero.sprite, hero.position, null, Color.White,
                 hero.angleRotation, hero.origine, 1.0f, SpriteEffects.None, 0f);
 
@@ -140,7 +226,9 @@ namespace Projet_02
                 spriteBatch.Draw(ennemi[i].sprite, ennemi[i].position, null, Color.White,
                 ennemi[i].angleRotation, ennemi[i].origine, 1.0f, SpriteEffects.None, 0f);
             }
-
+            
+            // Écrire un texte
+            spriteBatch.DrawString(font, "Hello Mono!", new Vector2(100, 100), Color.Black);
             spriteBatch.End();
 
             base.Draw(gameTime);
