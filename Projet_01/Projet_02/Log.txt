@@ -1,0 +1,17 @@
+
+23 novembre dans le cours
+-------------------------
+X Enlever la boucle qui ne servait qu'à ralentir le nombre (de 1 à 16) - 2 heures de cassage de tête
+
+23-novembre-2016
+----------------
+
+X Forcer les avions ennemis de rester dans le cadre.
+X Faire apparaitre 4 ennemis à la fois (aux hasard parmis les 16)
+X Faire apparaitre les ennemis soit de la gauche, soit de la droite, puis soit d'en haut soit d'en bas
+X Faire apparaitre 2 missiles sur chaque ennemis
+X Ajouter une augmentation/réduction aléatoire de la vitesse
+Faire lancer un missile selon la consigne avec un appareil
+Gérer le getRect
+Faire lancer de n'importe que
+l ennemi

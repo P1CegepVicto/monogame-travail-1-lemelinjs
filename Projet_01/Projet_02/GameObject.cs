@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
@@ -12,6 +13,8 @@ namespace Projet_02
     {
         public Texture2D sprite;
         public bool estVivant;
+        public bool isLaunched;
+        public bool estTireur;
         public bool directionChange;
         public float angleRotation;
 
@@ -36,8 +39,8 @@ namespace Projet_02
 
         public Rectangle GetRect()
         {
-            collisionHappen.X = (int)this.position.X;
-            collisionHappen.Y = (int) this.position.Y;
+            collisionHappen.X = (int)this.position.X - (int)this.origine.X;
+            collisionHappen.Y = (int) this.position.Y - (int)this.origine.Y;
             collisionHappen.Height = this.sprite.Height;
             collisionHappen.Width = this.sprite.Width;
             return collisionHappen;

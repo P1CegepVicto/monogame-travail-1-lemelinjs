@@ -51,61 +51,68 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\avionHero.png">
+    <Content Include="Content\Hero\avionHero.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\ennemi1.png">
+    <Content Include="Content\Ennemis\ennemi1.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\ennemi10.png">
+    <Content Include="Content\Ennemis\ennemi10.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\ennemi11.png">
+    <Content Include="Content\Ennemis\ennemi11.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\ennemi12.png">
+    <Content Include="Content\Ennemis\ennemi12.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\ennemi13.png">
+    <Content Include="Content\Ennemis\ennemi13.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\ennemi14.png">
+    <Content Include="Content\Ennemis\ennemi14.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\ennemi15.png">
+    <Content Include="Content\Ennemis\ennemi15.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\ennemi16.png">
+    <Content Include="Content\Ennemis\ennemi16.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\ennemi2.png">
+    <Content Include="Content\Ennemis\ennemi2.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\ennemi3.png">
+    <Content Include="Content\Ennemis\ennemi3.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\ennemi4.png">
+    <Content Include="Content\Ennemis\ennemi4.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\ennemi5.png">
+    <Content Include="Content\Ennemis\ennemi5.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\ennemi6.png">
+    <Content Include="Content\Ennemis\ennemi6.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\ennemi7.png">
+    <Content Include="Content\Ennemis\ennemi7.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\ennemi8.png">
+    <Content Include="Content\Ennemis\ennemi8.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\ennemi9.png">
+    <Content Include="Content\Ennemis\ennemi9.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\nuage.png">
+    <Content Include="Content\Hero\avionHeroFeu.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\water.jpg">
+    <Content Include="Content\Hero\TheExplosion.png" />
+    <Content Include="Content\missileEnnemi.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Fond\nuage.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Fond\water.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Icon.ico" />
