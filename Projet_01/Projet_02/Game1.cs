@@ -202,14 +202,12 @@ namespace Projet_02
 
           if (Keyboard.GetState().IsKeyDown(Keys.W))
             {
-
-               
-                if (fond.angleRotation >= -1.5708 && fond.angleRotation < 0.7854)
+                // décor vers vers la gauche (fleche de droite)
+                if (fond.angleRotation >= 0.7854 && fond.angleRotation < 1.5708) 
                 {
                     fond.origine.Y = fond.origine.Y - 3;
-                    
                 }
-                else if (fond.angleRotation >= -0.7854 && fond.angleRotation < 0.7854)
+                else if (fond.angleRotation >= -0.7854 && fond.angleRotation < 0.7854) 
                 {
                     fond.origine.Y = fond.origine.Y - 15;
                 }
@@ -217,34 +215,38 @@ namespace Projet_02
                 {
                     fond.origine.Y = fond.origine.Y - 3;
                 }
-                
-                // reculer le décor au lieu d'avancer condition décor vers vers la gauche (fleche de droite)
-                if (fond.angleRotation >= 1.5708 && fond.angleRotation < 2.3562) // Fonctionne
+//
+                // On commence à reculer
+                else if (fond.angleRotation >= 1.5708 && fond.angleRotation < 2.3562)
                 {
                     fond.origine.Y = fond.origine.Y + 3;
                 }
-                else if (fond.angleRotation >= 2.3562 && fond.angleRotation < 3.927 ) 
+                else if (fond.angleRotation >= 2.3562 && fond.angleRotation < 3.927)
                 {
                     fond.origine.Y = fond.origine.Y + 15;
                 }
-                else if (fond.angleRotation >= 3.927 && fond.angleRotation < 4.7124 )
+                else if (fond.angleRotation >= 3.927 && fond.angleRotation < 4.7124)
                 {
                     fond.origine.Y = fond.origine.Y + 3;
                 }
-
-                // Reculer le décor consition le décor vers la droite (flèche vers la gauche)
-                if (fond.angleRotation >= -2.3562 && fond.angleRotation < -1.5708)    // à vérifier
-                {
-                    fond.origine.Y = fond.origine.Y + 3;
-                }
-                else if (fond.angleRotation >= 2.3562 && fond.angleRotation <  3.927)
-                {
-                    fond.origine.Y = fond.origine.Y + 15;
-                }
-                else if ( fond.angleRotation >= -4.7124 && fond.angleRotation < -3.927) // à vérifier
-                {
-                    fond.origine.Y = fond.origine.Y + 3;
-                }
+//                // Reculer le décor consition le décor vers la droite (flèche vers la gauche)
+//                if (fond.angleRotation >= -2.3562 && fond.angleRotation < -1.5708)   
+//                {
+//                    fond.origine.Y = fond.origine.Y + 3;
+//                }
+//                else if (fond.angleRotation >= -0.7854 && fond.angleRotation <  0.7854)
+//                {
+//                    fond.origine.Y = fond.origine.Y + 15;
+//                }
+//                else if ( fond.angleRotation >= -1.5708 && fond.angleRotation < -0.7854) 
+//                {
+//                    fond.origine.Y = fond.origine.Y + 3;
+//                }
+                // On va à l'envers
+//                else if (fond.angleRotation >= -1.5708 && fond.angleRotation < -0.7854)
+//                {
+//                    fond.origine.Y = fond.origine.Y + 3;
+//                }
 
                 UpdateNuages(1);
                 }
