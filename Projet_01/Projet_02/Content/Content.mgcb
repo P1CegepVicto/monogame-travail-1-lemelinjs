@@ -13,3 +13,21 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin Sons/Bombe.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sons/Bombe.wav
+
+#begin Sons/BrotherInArms.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Sons/BrotherInArms.mp3
+
+#begin Sons/Bombe1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sons/Bombe1.wav
+
