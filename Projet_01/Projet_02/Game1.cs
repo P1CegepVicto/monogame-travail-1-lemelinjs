@@ -607,7 +607,7 @@ namespace Projet_02
         public void UpdateMissiles(GameTime gameTime)
         {
 
-            if (gameOver = true && tempsFrappe != 0)
+            if (gameOver == true && tempsFrappe != 0)
             {
                 tempsFrappe = gameTime.TotalGameTime.Milliseconds;
                 message = "frappé a " + tempsFrappe;
