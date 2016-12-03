@@ -67,5 +67,17 @@ namespace Projet_02
             }
         }
 
+        public void ThisRotation(float min ,float max, float vitesseX, float vitesseY)
+        {
+            if (min >= 0 && max > 0) // valeurs positives
+            {
+                if (this.angleRotation >= min && this.angleRotation < max)
+                {
+                    this.vitesse.Y += vitesseY;
+                    this.vitesse.X += vitesseX;
+                }
+            }
+        }
+
     }
 }

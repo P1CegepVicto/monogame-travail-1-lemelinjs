@@ -19,7 +19,15 @@ namespace Projet_02
         public Random nombre = new Random();
         public int nbVies = 0;
         private bool gameOver;
-        int tempsFrappe = 0;
+        int tempsFrappe = 0, tempsActuel=0;
+        
+        // Déclaration pour les angles
+        int angleNombre = 0; // Combien se segments
+        float angleIncrement=0; // Le cacul d'incrément
+        private float[] angle; // angles
+        private float rotationGlobale;
+        GameObject rapporteur;
+        private GameObject barre;
         GameObject fond;
         GameObject[] nuage;
         GameObject hero;
@@ -81,6 +89,62 @@ namespace Projet_02
             
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            // Attribuer les angles
+            angleNombre = 360; // 360 angles 
+            angleIncrement = (float) (3.14159265358979323846264338327950288419716939937510582 * 2)/angleNombre;
+            angle = new float[angleNombre]; 
+//            for (int i = 0; i < 2; i++) // Ligne 0 les angles positifs, ligne 1 les angles négatifs
+//            {
+                for (int i = 0; i < angleNombre; i++)
+                {
+//                    if (i==0) // On rempli les positifs
+//                    {
+                        if (i==0 ) // On intitialise la première valeur
+                        {
+                            angle[i] = 0;
+                        }
+                        else if (i < angleNombre) // On addition l'incrément
+                        {
+                            angle[i] = angle[i-1] + angleIncrement;
+                        }
+
+//                    }
+//                    if (i==1) // On rempli les négatifs
+//                    {
+//                        if (i == 1) 
+//                        {
+//                            if (i == 1 && j == 0) // On intitialise la première valeur
+//                            {
+//                                angle[i, j] = 0;
+//                            }
+//                            else if (j < angleNombre) // On addition l'incrément
+//                            {
+//                                angle[i, j] = angle[i, j - 1] - angleIncrement;
+//                            }
+//
+//                        }
+//
+//                    }
+                    
+                }   
+//            }
+
+
+            // Le rapporteur
+            rapporteur = new GameObject(fenetre.Width / 2,
+               fenetre.Height / 2, true);
+            rapporteur.sprite = Content.Load<Texture2D>("rapporteur.png");
+            rapporteur.angleRotation = 1.5708f;
+            rapporteur.origine.X = rapporteur.sprite.Width / 2;
+            rapporteur.origine.Y = rapporteur.sprite.Height/2;
+
+            barre = new GameObject(fenetre.Width / 2,
+               fenetre.Height / 2, true);
+            barre.sprite = Content.Load<Texture2D>("barre.png");
+            barre.origine.Y = barre.sprite.Height/ 2;
+//            barre.origine.X = barre.sprite.Width / 2;
+
 
             // Le sont d'un missile non mortel
             son = Content.Load<SoundEffect>("Sons\\Bombe1");
@@ -202,127 +266,193 @@ namespace Projet_02
 
           if (Keyboard.GetState().IsKeyDown(Keys.W))
             {
-                // décor vers vers la gauche (fleche de droite)
-                if (fond.angleRotation >= 0.7854 && fond.angleRotation < 1.5708) 
-                {
-                    fond.origine.Y = fond.origine.Y - 3;
-                }
-                else if (fond.angleRotation >= -0.7854 && fond.angleRotation < 0.7854) 
-                {
-                    fond.origine.Y = fond.origine.Y - 15;
-                }
-                else if (fond.angleRotation >= -1.5708 && fond.angleRotation < -0.7854)
-                {
-                    fond.origine.Y = fond.origine.Y - 3;
-                }
-//
-                // On commence à reculer
-                else if (fond.angleRotation >= 1.5708 && fond.angleRotation < 2.3562)
-                {
-                    fond.origine.Y = fond.origine.Y + 3;
-                }
-                else if (fond.angleRotation >= 2.3562 && fond.angleRotation < 3.927)
-                {
-                    fond.origine.Y = fond.origine.Y + 15;
-                }
-                else if (fond.angleRotation >= 3.927 && fond.angleRotation < 4.7124)
-                {
-                    fond.origine.Y = fond.origine.Y + 3;
-                }
-//                // Reculer le décor consition le décor vers la droite (flèche vers la gauche)
-//                if (fond.angleRotation >= -2.3562 && fond.angleRotation < -1.5708)   
-//                {
-//                    fond.origine.Y = fond.origine.Y + 3;
-//                }
-//                else if (fond.angleRotation >= -0.7854 && fond.angleRotation <  0.7854)
-//                {
-//                    fond.origine.Y = fond.origine.Y + 15;
-//                }
-//                else if ( fond.angleRotation >= -1.5708 && fond.angleRotation < -0.7854) 
-//                {
-//                    fond.origine.Y = fond.origine.Y + 3;
-//                }
-                // On va à l'envers
-//                else if (fond.angleRotation >= -1.5708 && fond.angleRotation < -0.7854)
-//                {
-//                    fond.origine.Y = fond.origine.Y + 3;
-//                }
 
+                fond.ThisRotation(angle[0], angle[45],0, -0.05f);
+//                Les 16 ennemis
+                for (int i = 0; i < 16; i++)
+                {
+                    int missileIndividuel = 0;
+                    if (ennemi[i].estVivant)
+                    {
+                        ennemi[i].ThisRotation(angle[0], angle[45],0,0.02f);
+                    }
+                }
+
+                fond.ThisRotation(angle[45], angle[90], 0, -0.05f);
+                //  Les 16 ennemis
+                for (int i = 0; i < 16; i++)
+                {
+                    int missileIndividuel = 0;
+                    if (ennemi[i].estVivant)
+                    {
+                        ennemi[i].ThisRotation(angle[45], angle[90], 0, 0.02f);
+                    }
+                }
+
+                if (fond.angleRotation >= angle[90] && fond.angleRotation < angle[135])
+                {
+                    fond.vitesse.Y += 0.01f;
+                    fond.vitesse.X -= 0.07f;
+                }
+                else if (fond.angleRotation >= angle[135] && fond.angleRotation < angle[215])
+                {
+                    fond.vitesse.Y += 0.07f;
+                    fond.vitesse.X += 0.01f;
+                }
+                else if (fond.angleRotation >= angle[215] && fond.angleRotation < angle[70])
+                {
+                    fond.vitesse.Y += 0.01f;
+                    fond.vitesse.X += 0.07f;
+                }
+                else if (fond.angleRotation >= angle[270] && fond.angleRotation < angle[315])
+                {
+                    fond.vitesse.Y -= 0.01f;
+                    fond.vitesse.X += 0.07f;
+                }
+                else if (fond.angleRotation >= angle[315] && fond.angleRotation < angle[359])
+                {
+                    fond.vitesse.Y -= 0.01f;
+                    fond.vitesse.X += 0.07f;
+                }
+
+                // Angles négatifs - N'oublie pas que le plus grand chiffre est celui près du zéro
+                if (fond.angleRotation >= -angle[45] && fond.angleRotation < angle[0])
+                {
+                    fond.vitesse.Y -= 0.07f;
+                    fond.vitesse.X -= 0.0f;
+                }
+                else if (fond.angleRotation >= -angle[90] && fond.angleRotation < -angle[45])
+                {
+                    fond.vitesse.Y -= 0.00f;
+                    fond.vitesse.X += 0.07f;
+                }
+                else if (fond.angleRotation >= -angle[135] && fond.angleRotation < -angle[90])
+                {
+                    fond.vitesse.Y += 0.00f;
+                    fond.vitesse.X += 0.07f;
+                }
+                else if (fond.angleRotation >= -angle[215] && fond.angleRotation < -angle[135])
+                {
+                    fond.vitesse.Y += 0.07f;
+                    fond.vitesse.X += 0.01f;
+                }
+                else if (fond.angleRotation >= -angle[270] && fond.angleRotation < -angle[215])
+                {
+                    fond.vitesse.Y += 0.0f;
+                    fond.vitesse.X -= 0.01f;
+                }
+                else if (fond.angleRotation >= -angle[359] && fond.angleRotation < -angle[270])
+                {
+                    fond.vitesse.Y -= 0.01f;
+                    fond.vitesse.X -= 0.07f;
+                }
+               
                 UpdateNuages(1);
                 }
 
             if (Keyboard.GetState().IsKeyDown(Keys.S))
             {
-
-                if (fond.angleRotation > -4.7124 && fond.angleRotation <= -3.927)
+                if (fond.vitesse.X > 0)
                 {
-                    fond.origine.Y = fond.origine.Y + 3;
+                    fond.vitesse.X -= 0.07f;
                 }
-                else if (fond.angleRotation >= -2.2562 && fond.angleRotation <= 0.7854)
+                else
                 {
-                    fond.origine.Y = fond.origine.Y + 15;
-                }
-                else if (fond.angleRotation > 0.7854 && fond.angleRotation < 1.5708)
-                {
-                    fond.origine.Y = fond.origine.Y + 3;
+                    fond.vitesse.X += 0.07f;
                 }
 
-
-
-                //                if (fond.vitesse.Y < 0.1f)
-                //                {
-                //                    fond.vitesse.Y = 0.4f;
-                //                }
-
+                if (fond.vitesse.Y > 0)
+                {
+                    fond.vitesse.Y -= 0.07f;
+                }
+                else
+                {
+                    fond.vitesse.Y += 0.07f;
+                }
+                
+                
                 UpdateNuages(2);
              }
-                if (Keyboard.GetState().IsKeyDown(Keys.A))
-                {
-                    fond.origine.X -= 15;
-
-                    fond.vitesse.X -= 0.1f;
-                    
-                    UpdateNuages(3);
-                }
-
-                if (Keyboard.GetState().IsKeyDown(Keys.D))
-                {
-
-                    fond.origine.X -= 15;
-                    fond.vitesse.X += 0.1f;
-                    
-                    UpdateNuages(4);
-                 }
+//                if (Keyboard.GetState().IsKeyDown(Keys.A))
+//                {
+//                    fond.origine.X -= 15;
+//
+//                    fond.vitesse.X -= 0.1f;
+//                    
+//                    UpdateNuages(3);
+//                }
+//
+//                if (Keyboard.GetState().IsKeyDown(Keys.D))
+//                {
+//
+//                    fond.origine.X -= 15;
+//                    fond.vitesse.X += 0.1f;
+//                    
+//                    UpdateNuages(4);
+//                 }
 
                 // Rotation de l'écran
                 if (Keyboard.GetState().IsKeyDown(Keys.Left))
                 {
-                    fond.angleRotation += 0.01f;
-                    if (fond.angleRotation > 4.7124f)
-                    {
-                        fond.angleRotation = -1.5708f;
-                    }
+                    fond.angleRotation += 0.05f;
+                   
                 }
                 if (Keyboard.GetState().IsKeyDown(Keys.Right))
                 {
-                    fond.angleRotation += -0.01f;
-                    if (fond.angleRotation < -4.7124f)
-                    {
-                        fond.angleRotation = 1.5708f;
-                    }
-            }
-            //fond.origine += fond.vitesse;
+                    fond.angleRotation += -0.05f;
 
-            
+            }
+            fond.origine += fond.vitesse;
+            //Les 16 ennemis
+            for (int i = 0; i < 16; i++)
+            {
+                int missileIndividuel = 0;
+                if (ennemi[i].estVivant)
+                {
+                    ennemi[i].position += ennemi[i].vitesse;
+                }
+            }
+
 
             // TODO: Add your update logic here
             UpdateHero();
             UpdateEnnemi();
             UpdateMissiles();
+            UpdateFond();
             UpdateMissiles(gameTime);
             UpdateEnnemi(gameTime);
             UpdateHero(gameTime);
             base.Update(gameTime);
+        }
+
+        public void UpdateFond()
+        {
+            if (fond.origine.X < fenetre.Height/2)
+            {
+                fond.origine.X = fenetre.Height/2;
+            }
+            else if (fond.origine.X > fond.sprite.Width - (fenetre.Height/2))
+            {
+                fond.origine.X = fond.sprite.Width - fenetre.Height/2;
+            }
+            if (fond.origine.Y < fenetre.Height/2)
+            {
+                fond.origine.Y = fenetre.Height/2;
+            }
+            else if (fond.origine.Y > fond.sprite.Height - fenetre.Height/2)
+            {
+                fond.origine.Y = fond.sprite.Height - fenetre.Height/2;
+            }
+
+            // Rétablir le compteur de rotation après un tour complet
+            if (fond.angleRotation > 6.2832f)
+            {
+                fond.angleRotation = 0f;
+            }
+            else if (fond.angleRotation < -6.2832f)
+            {
+                fond.angleRotation = 0f;
+            }
         }
 
         public void UpdateHero()
@@ -607,15 +737,12 @@ namespace Projet_02
         public void UpdateMissiles(GameTime gameTime)
         {
 
-            if (gameOver == true && tempsFrappe != 0)
+            tempsActuel  = gameTime.TotalGameTime.Seconds;
+            if (gameOver == true && tempsFrappe == 0)
             {
-                tempsFrappe = gameTime.TotalGameTime.Milliseconds;
-                message = "frappé a " + tempsFrappe;
+                tempsFrappe = tempsActuel;
             }
-            else if (gameTime.TotalGameTime.Milliseconds - tempsFrappe > 5000  && gameOver == true) //  si 5 seconde se sont écoulés depuis gameOver
-            {
-                Exit();
-            }
+            
         }
 
         /// <summary>
@@ -629,9 +756,17 @@ namespace Projet_02
             // TODO: Add your drawing code here
             
             spriteBatch.Begin();
-            // L'eau
+            //  Le fond
             spriteBatch.Draw(fond.sprite, fond.position, null,  Color.White,
                 fond.angleRotation,fond.origine,1.0f, SpriteEffects.None,0f);
+
+            // Le barre
+            spriteBatch.Draw(barre.sprite, barre.position, null, Color.White,
+                fond.angleRotation, barre.origine, 2.0f, SpriteEffects.None, 0f);
+
+            // Le rapporteur
+            spriteBatch.Draw(rapporteur.sprite, rapporteur.position, null, Color.White,
+                rapporteur.angleRotation, rapporteur.origine, 2.0f, SpriteEffects.None, 0f);
 
             // LEs 10 nuages
             for (int i = 0; i < 10; i++)
@@ -643,7 +778,7 @@ namespace Projet_02
             // Le héro
             
             spriteBatch.Draw(hero.sprite, hero.position, null, Color.White,
-                hero.angleRotation, hero.origine, 1.0f, SpriteEffects.None, 0f);
+                hero.angleRotation, hero.origine, 1f, SpriteEffects.None, 0f);
             // Le feu si frappé
             for (int i = 0; i < heroEnFume.Length; i++)
             {
@@ -664,19 +799,30 @@ namespace Projet_02
                         ennemi[i].angleRotation, ennemi[i].origine, 1.0f, 
                         SpriteEffects.None, 0f);
                     spriteBatch.Draw(missile[i*2].sprite,missile[i*2].position, null, Color.White,
-                        missile[i*2].angleRotation, missile[i * 2].origine, 0.5f,
+                        ennemi[i].angleRotation, ennemi[i].origine, 0.5f,
                         SpriteEffects.None, 0f);
                     spriteBatch.Draw(missile[(i * 2)+1].sprite, missile[(i * 2)+1].position, null, Color.White,
-                        missile[(i * 2)+1].angleRotation, missile[(i * 2)+1].origine, 0.5f,
+                        ennemi[i].angleRotation, ennemi[i].origine, 0.5f,
                         SpriteEffects.None, 0f);
                 }
                
             }
-            
-            // Écrire un texte
-            spriteBatch.DrawString(font, message, new Vector2(100, 100), Color.Black);
-            spriteBatch.End();
 
+            // Écrire un texte duant la game
+            //            if (!gameOver)
+            //            {
+            //                spriteBatch.DrawString(font, message, new Vector2(100, 100), Color.Black);
+            //            }
+
+            // Écrire le message du Game Over
+            //            else if (tempsActuel - tempsFrappe > 5 && gameOver == true) //  si 5 seconde se sont écoulés depuis gameOver
+            //            {
+            message = "Temps de la partie : " + tempsActuel +  " secondes \nVotre rotation est de " + fond.angleRotation + "( en float )";
+            spriteBatch.DrawString(font, message, new Vector2(100, 100), Color.Black);
+            //Exit();
+            //            }
+
+            spriteBatch.End();
             base.Draw(gameTime);
         }
     }
