@@ -19,22 +19,26 @@ namespace Projet_02
         public Random nombre = new Random();
         public int nbVies = 0;
         private bool gameOver;
-        int tempsFrappe = 0, tempsActuel=0;
-        
+        int tempsFrappe = 0, tempsActuel = 0;
+
         // Déclaration pour les angles
         int angleNombre = 0; // Combien se segments
-        float angleIncrement=0; // Le cacul d'incrément
+        float angleIncrement = 0; // Le cacul d'incrément
         private float[] angle; // angles
         private float rotationGlobale;
         GameObject rapporteur;
         private GameObject barre;
+
+
         GameObject fond;
+        GameObject fondMiniature;
         GameObject[] nuage;
         GameObject hero;
         GameObject heroEnFeu;
-        GameObject [] heroEnFume;
+        GameObject[] heroEnFume;
         GameObject[] ennemi;
         GameObject[] missile;
+        GameObject flocon;
         SpriteFont font;
 
         // Les sons
@@ -43,15 +47,20 @@ namespace Projet_02
         SoundEffectInstance bombe1;
         // Parametres de la game
 
-        int nombreEnnemisVivant = 0, nombreEnnemiMax = 4;
+        int nombreEnnemisVivant = 0, nombreEnnemiMax = 10;
         int ennemiQuiTire;
         int missileEnCourse = 0, nbMissilesSup = 0;
+
         String message;
 
+        // les limites du jeu
+        float limiteMinX, limiteMaxX, limiteMinY, limiteMaxY;
+
+        private int margeDeSecurite = 0;
 
         public Game1()
         {
-            
+
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
@@ -65,18 +74,20 @@ namespace Projet_02
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            this.graphics.PreferredBackBufferWidth = 
+            this.graphics.PreferredBackBufferWidth =
                 graphics.GraphicsDevice.DisplayMode.Width;
-            this.graphics.PreferredBackBufferHeight = 
+            this.graphics.PreferredBackBufferHeight =
                 graphics.GraphicsDevice.DisplayMode.Height;
 
-            fenetre = new Rectangle(0,0, 
-                graphics.GraphicsDevice.DisplayMode.Width, 
+            fenetre = new Rectangle(0, 0,
+                graphics.GraphicsDevice.DisplayMode.Width,
                 graphics.GraphicsDevice.DisplayMode.Height);
             this.graphics.ToggleFullScreen();
             //this.graphics.ApplyChanges();
             message = "La fenetre fait " + fenetre.Width + " de large \n" +
                 "La fenetre fait " + fenetre.Height + " de haut";
+
+
             base.Initialize();
         }
 
@@ -86,64 +97,44 @@ namespace Projet_02
         /// </summary>
         protected override void LoadContent()
         {
-            
+
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // Attribuer les angles
             angleNombre = 360; // 360 angles 
-            angleIncrement = (float) (3.14159265358979323846264338327950288419716939937510582 * 2)/angleNombre;
-            angle = new float[angleNombre]; 
-//            for (int i = 0; i < 2; i++) // Ligne 0 les angles positifs, ligne 1 les angles négatifs
-//            {
-                for (int i = 0; i < angleNombre; i++)
+            angleIncrement = (float)(3.14159265358979323846264338327950288419716939937510582 * 2) / angleNombre;
+            angle = new float[angleNombre];
+            for (int i = 0; i < angleNombre; i++)
+            {
+
+                if (i == 0) // On intitialise la première valeur
                 {
-//                    if (i==0) // On rempli les positifs
-//                    {
-                        if (i==0 ) // On intitialise la première valeur
-                        {
-                            angle[i] = 0;
-                        }
-                        else if (i < angleNombre) // On addition l'incrément
-                        {
-                            angle[i] = angle[i-1] + angleIncrement;
-                        }
-
-//                    }
-//                    if (i==1) // On rempli les négatifs
-//                    {
-//                        if (i == 1) 
-//                        {
-//                            if (i == 1 && j == 0) // On intitialise la première valeur
-//                            {
-//                                angle[i, j] = 0;
-//                            }
-//                            else if (j < angleNombre) // On addition l'incrément
-//                            {
-//                                angle[i, j] = angle[i, j - 1] - angleIncrement;
-//                            }
-//
-//                        }
-//
-//                    }
-                    
-                }   
-//            }
-
+                    angle[i] = 0;
+                }
+                else if (i < angleNombre) // On addition l'incrément
+                {
+                    angle[i] = angle[i - 1] + angleIncrement;
+                }
+            }
 
             // Le rapporteur
+            // Dans cette exemple, je le place au centre de l'écran
             rapporteur = new GameObject(fenetre.Width / 2,
                fenetre.Height / 2, true);
             rapporteur.sprite = Content.Load<Texture2D>("rapporteur.png");
             rapporteur.angleRotation = 1.5708f;
-            rapporteur.origine.X = rapporteur.sprite.Width / 2;
-            rapporteur.origine.Y = rapporteur.sprite.Height/2;
 
+            //Je place son centre sur l'objet fixe
+            rapporteur.origine.X = rapporteur.sprite.Width / 2;
+            rapporteur.origine.Y = rapporteur.sprite.Height / 2;
+
+            //Je le place sur l'objet amovible
             barre = new GameObject(fenetre.Width / 2,
                fenetre.Height / 2, true);
             barre.sprite = Content.Load<Texture2D>("barre.png");
-            barre.origine.Y = barre.sprite.Height/ 2;
-//            barre.origine.X = barre.sprite.Width / 2;
+            barre.origine.Y = barre.sprite.Height / 2;
+            //            barre.origine.X = barre.sprite.Width / 2;
 
 
             // Le sont d'un missile non mortel
@@ -154,21 +145,21 @@ namespace Projet_02
             son = Content.Load<SoundEffect>("Sons\\Bombe");
             bombe = son.CreateInstance();
 
-            
+
 
             //La musique de fond
             Song song = Content.Load<Song>("Sons\\BrotherInArms");
             MediaPlayer.Play(song);
-            
+
             // Le héro
             //--------
-            hero = new GameObject(fenetre.Width/2,
-               fenetre.Height/2, true);
+            hero = new GameObject(fenetre.Width / 2,
+               fenetre.Height / 2, true);
             hero.sprite = Content.Load<Texture2D>("Hero/avionHero.png");
             // Le centre de l'image
-            hero.origine.X = hero.sprite.Width/2;
-            hero.origine.Y = hero.sprite.Height/2;
-            hero.angleRotation = -1.5708f;
+            hero.origine.X = hero.sprite.Width / 2;
+            hero.origine.Y = hero.sprite.Height / 2;
+            hero.angleRotation = angle[0];
 
             //Le héro en feu
             heroEnFeu = new GameObject(hero.position.X,
@@ -178,11 +169,11 @@ namespace Projet_02
             // Le héro en fumé
             heroEnFume = new GameObject[3];
 
-            heroEnFume[0] = new GameObject(hero.position.X-200,
+            heroEnFume[0] = new GameObject(hero.position.X - 200,
                 hero.position.Y, false);
             heroEnFume[0].sprite = Content.Load<Texture2D>("Hero/fume.png");
 
-            heroEnFume[1] = new GameObject(hero.position.X-100,
+            heroEnFume[1] = new GameObject(hero.position.X - 100,
                hero.position.Y, false);
             heroEnFume[1].sprite = Content.Load<Texture2D>("Hero/fume.png");
 
@@ -197,16 +188,21 @@ namespace Projet_02
             fond.position.X = hero.position.X;
             fond.position.Y = hero.position.Y;
 
-            fond.origine.X = fond.sprite.Width/2;
-            fond.origine.Y = fond.sprite.Height/ 2;
+            fond.origine.X = fond.sprite.Width / 2;
+            fond.origine.Y = fond.sprite.Height / 2;
+
+            // miniature
+            fondMiniature = new GameObject();
+            fondMiniature.origine.X = 0;
+            fondMiniature.origine.Y = 0;
 
 
             // Les nuages
             nuage = new GameObject[10];
             for (int i = 0; i < 10; i++)
             {
-                nuage[i] = new GameObject(nombre.Next(0 - (fenetre.Width *2), fenetre.Width  *2),
-                nombre.Next(0 - (fenetre.Height *2), fenetre.Height * 2), true);
+                nuage[i] = new GameObject(nombre.Next(0 - (fenetre.Width * 2), fenetre.Width * 2),
+                nombre.Next(0 - (fenetre.Height * 2), fenetre.Height * 2), true);
                 nuage[i].sprite = Content.Load<Texture2D>("Fond/nuage.png");
             }
 
@@ -219,25 +215,28 @@ namespace Projet_02
             {
                 ennemi[i] = new GameObject(nombre.Next(0, fenetre.Width),
                 nombre.Next(0, fenetre.Height), false);
-                ennemi[i].sprite = Content.Load<Texture2D>("ennemis/ennemi" + (i+1) + ".png");
-                ennemi[i].origine.X = ennemi[i].sprite.Width/2;
+                ennemi[i].sprite = Content.Load<Texture2D>("ennemis/ennemi" + (i + 1) + ".png");
+                ennemi[i].origine.X = ennemi[i].sprite.Width / 2;
                 ennemi[i].origine.Y = ennemi[i].sprite.Height / 2;
+
+                //tag pour l'ennemi
+                ennemi[i].tag = "ennemi";
                 // 2 missiles pour chaque ennemi
                 // Missile du haut
-                missile[i * 2] = new GameObject(ennemi[i].position.X, 
-                    ennemi[i].position.Y,true);
+                missile[i * 2] = new GameObject(ennemi[i].position.X,
+                    ennemi[i].position.Y, true);
                 missile[i * 2].sprite = Content.Load<Texture2D>("missileEnnemi.png");
-                missile[i * 2].origine.Y = missile[i*2].sprite.Height/2;
+                missile[i * 2].origine.Y = missile[i * 2].sprite.Height / 2;
                 missile[i * 2].origine.X = missile[i * 2].sprite.Width / 2;
-                missile[i*2].isLaunched = false;
+                missile[i * 2].isLaunched = false;
 
-//              Missile du bas
-                missile[(i*2)+1] = new GameObject(ennemi[i].position.X, 
-                    ennemi[i].position.Y,true);
-                missile[(i*2)+1].sprite = Content.Load<Texture2D>("missileEnnemi.png");
-                missile[(i * 2)+1].origine.Y = missile[(i * 2)+1].sprite.Height / 2;
-                missile[(i * 2)+1].origine.X = missile[(i * 2)+1].sprite.Width / 2;
-                missile[(i * 2)+1].isLaunched = false;
+                //              Missile du bas
+                missile[(i * 2) + 1] = new GameObject(ennemi[i].position.X,
+                    ennemi[i].position.Y, true);
+                missile[(i * 2) + 1].sprite = Content.Load<Texture2D>("missileEnnemi.png");
+                missile[(i * 2) + 1].origine.Y = missile[(i * 2) + 1].sprite.Height / 2;
+                missile[(i * 2) + 1].origine.X = missile[(i * 2) + 1].sprite.Width / 2;
+                missile[(i * 2) + 1].isLaunched = false;
             }
 
             // Le texte
@@ -264,91 +263,15 @@ namespace Projet_02
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-          if (Keyboard.GetState().IsKeyDown(Keys.W))
+            if (Keyboard.GetState().IsKeyDown(Keys.W))
             {
+                // j'ai abandonné le projet de rotation car j'avais du mal à 
+                // Faire rotationner les ennemis autour de moi.
+                UpdateRotationVitesse();
 
-                fond.ThisRotation(angle[0], angle[45],0, -0.05f);
-//                Les 16 ennemis
-                for (int i = 0; i < 16; i++)
-                {
-                    int missileIndividuel = 0;
-                    if (ennemi[i].estVivant)
-                    {
-                        ennemi[i].ThisRotation(angle[0], angle[45],0,0.02f);
-                    }
-                }
 
-                fond.ThisRotation(angle[45], angle[90], 0, -0.05f);
-                //  Les 16 ennemis
-                for (int i = 0; i < 16; i++)
-                {
-                    int missileIndividuel = 0;
-                    if (ennemi[i].estVivant)
-                    {
-                        ennemi[i].ThisRotation(angle[45], angle[90], 0, 0.02f);
-                    }
-                }
-
-                if (fond.angleRotation >= angle[90] && fond.angleRotation < angle[135])
-                {
-                    fond.vitesse.Y += 0.01f;
-                    fond.vitesse.X -= 0.07f;
-                }
-                else if (fond.angleRotation >= angle[135] && fond.angleRotation < angle[215])
-                {
-                    fond.vitesse.Y += 0.07f;
-                    fond.vitesse.X += 0.01f;
-                }
-                else if (fond.angleRotation >= angle[215] && fond.angleRotation < angle[70])
-                {
-                    fond.vitesse.Y += 0.01f;
-                    fond.vitesse.X += 0.07f;
-                }
-                else if (fond.angleRotation >= angle[270] && fond.angleRotation < angle[315])
-                {
-                    fond.vitesse.Y -= 0.01f;
-                    fond.vitesse.X += 0.07f;
-                }
-                else if (fond.angleRotation >= angle[315] && fond.angleRotation < angle[359])
-                {
-                    fond.vitesse.Y -= 0.01f;
-                    fond.vitesse.X += 0.07f;
-                }
-
-                // Angles négatifs - N'oublie pas que le plus grand chiffre est celui près du zéro
-                if (fond.angleRotation >= -angle[45] && fond.angleRotation < angle[0])
-                {
-                    fond.vitesse.Y -= 0.07f;
-                    fond.vitesse.X -= 0.0f;
-                }
-                else if (fond.angleRotation >= -angle[90] && fond.angleRotation < -angle[45])
-                {
-                    fond.vitesse.Y -= 0.00f;
-                    fond.vitesse.X += 0.07f;
-                }
-                else if (fond.angleRotation >= -angle[135] && fond.angleRotation < -angle[90])
-                {
-                    fond.vitesse.Y += 0.00f;
-                    fond.vitesse.X += 0.07f;
-                }
-                else if (fond.angleRotation >= -angle[215] && fond.angleRotation < -angle[135])
-                {
-                    fond.vitesse.Y += 0.07f;
-                    fond.vitesse.X += 0.01f;
-                }
-                else if (fond.angleRotation >= -angle[270] && fond.angleRotation < -angle[215])
-                {
-                    fond.vitesse.Y += 0.0f;
-                    fond.vitesse.X -= 0.01f;
-                }
-                else if (fond.angleRotation >= -angle[359] && fond.angleRotation < -angle[270])
-                {
-                    fond.vitesse.Y -= 0.01f;
-                    fond.vitesse.X -= 0.07f;
-                }
-               
                 UpdateNuages(1);
-                }
+            }
 
             if (Keyboard.GetState().IsKeyDown(Keys.S))
             {
@@ -369,44 +292,44 @@ namespace Projet_02
                 {
                     fond.vitesse.Y += 0.07f;
                 }
-                
-                
-                UpdateNuages(2);
-             }
-//                if (Keyboard.GetState().IsKeyDown(Keys.A))
-//                {
-//                    fond.origine.X -= 15;
-//
-//                    fond.vitesse.X -= 0.1f;
-//                    
-//                    UpdateNuages(3);
-//                }
-//
-//                if (Keyboard.GetState().IsKeyDown(Keys.D))
-//                {
-//
-//                    fond.origine.X -= 15;
-//                    fond.vitesse.X += 0.1f;
-//                    
-//                    UpdateNuages(4);
-//                 }
 
-                // Rotation de l'écran
-                if (Keyboard.GetState().IsKeyDown(Keys.Left))
-                {
-                    fond.angleRotation += 0.05f;
-                   
-                }
-                if (Keyboard.GetState().IsKeyDown(Keys.Right))
-                {
-                    fond.angleRotation += -0.05f;
+
+                UpdateNuages(2);
+            }
+            //                if (Keyboard.GetState().IsKeyDown(Keys.A))
+            //                {
+            //                    fond.origine.X -= 15;
+            //
+            //                    fond.vitesse.X -= 0.1f;
+            //                    
+            //                    UpdateNuages(3);
+            //                }
+            //
+            //                if (Keyboard.GetState().IsKeyDown(Keys.D))
+            //                {
+            //
+            //                    fond.origine.X -= 15;
+            //                    fond.vitesse.X += 0.1f;
+            //                    
+            //                    UpdateNuages(4);
+            //                 }
+
+            // Rotation de l'écran
+            if (Keyboard.GetState().IsKeyDown(Keys.Left))
+            {
+                hero.angleRotation += -0.05f;
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Right))
+            {
+                hero.angleRotation += 0.05f;
+
 
             }
             fond.origine += fond.vitesse;
             //Les 16 ennemis
             for (int i = 0; i < 16; i++)
             {
-                int missileIndividuel = 0;
+                //int missileIndividuel = 0;
                 if (ennemi[i].estVivant)
                 {
                     ennemi[i].position += ennemi[i].vitesse;
@@ -415,49 +338,217 @@ namespace Projet_02
 
 
             // TODO: Add your update logic here
+            UpdateMaquette();
             UpdateHero();
             UpdateEnnemi();
             UpdateMissiles();
             UpdateFond();
             UpdateMissiles(gameTime);
+
             UpdateEnnemi(gameTime);
             UpdateHero(gameTime);
             base.Update(gameTime);
         }
+        public void UpdateMaquette()
+        {
+            limiteMinX = 0 - fond.origine.X;
+            limiteMaxX = fond.sprite.Width - fond.origine.X;
+
+            limiteMinY = 0 - fond.origine.Y;
+            limiteMaxY = fond.sprite.Height - fond.origine.Y;
+        }
+        public void UpdateRotationVitesse()
+        {
+            if (hero.angleRotation >= angle[0] && hero.angleRotation < angle[45])
+            {
+                fond.ThisRotation(angle[0], angle[45], "xHighRightYno");
+                ////                Les 16 ennemis
+                ////                Éventuellement je vais faire traverser mes ennemis vivant au début 
+                ////                du tableau et sorter seulement les premiers
+                for (int i = 0; i < 16; i++)
+                {
+                    int missileIndividuel = 0;
+                    if (ennemi[i].estVivant)
+                    {
+                        ennemi[i].ThisRotation(angle[0], angle[45], "xHighRightYno");
+                    }
+                }
+            }
+            else if (hero.angleRotation >= angle[45] && hero.angleRotation < angle[60])
+            {
+                fond.ThisRotation(angle[45], angle[60], "xSlowRightYSlowDown");
+                //                Les 16 ennemis
+                //                Éventuellement je vais faire traverser mes ennemis vivant au début 
+                //                du tableau et sorter seulement les premiers
+                for (int i = 0; i < 16; i++)
+                {
+                    int missileIndividuel = 0;
+                    if (ennemi[i].estVivant)
+                    {
+                        ennemi[i].ThisRotation(angle[45], angle[60], "xSlowRightYSlowDown");
+                    }
+                }
+            }
+            else if (hero.angleRotation >= angle[60] && hero.angleRotation < angle[135])
+            {
+                fond.ThisRotation(angle[60], angle[135], "xNoYHighDown");
+                //                Les 16 ennemis
+                //                Éventuellement je vais faire traverser mes ennemis vivant au début 
+                //                du tableau et sorter seulement les premiers
+                for (int i = 0; i < 16; i++)
+                {
+                    int missileIndividuel = 0;
+                    if (ennemi[i].estVivant)
+                    {
+                        ennemi[i].ThisRotation(angle[60], angle[135], "xNoYHighDown");
+                    }
+                }
+            }
+            else if (hero.angleRotation >= angle[135] && hero.angleRotation < angle[150])
+            {
+                fond.ThisRotation(angle[135], angle[150], "xSlowLeftYSlowDown");
+                //                Les 16 ennemis
+                //                Éventuellement je vais faire traverser mes ennemis vivant au début 
+                //                du tableau et sorter seulement les premiers
+                for (int i = 0; i < 16; i++)
+                {
+                    int missileIndividuel = 0;
+                    if (ennemi[i].estVivant)
+                    {
+                        ennemi[i].ThisRotation(angle[135], angle[150], "xSlowLeftYSlowDown");
+                    }
+                }
+            }
+            else if (hero.angleRotation >= angle[150] && hero.angleRotation < angle[225])
+            {
+                fond.ThisRotation(angle[150], angle[225], "xHighLeftYNo");
+                //                Les 16 ennemis
+                //                Éventuellement je vais faire traverser mes ennemis vivant au début 
+                //                du tableau et sorter seulement les premiers
+                for (int i = 0; i < 16; i++)
+                {
+                    int missileIndividuel = 0;
+                    if (ennemi[i].estVivant)
+                    {
+                        ennemi[i].ThisRotation(angle[150], angle[225], "xHighLeftYNo");
+                    }
+                }
+            }
+            else if (hero.angleRotation >= angle[225] && hero.angleRotation < angle[240])
+            {
+                fond.ThisRotation(angle[225], angle[240], "xSlowLeftYSlowUp");
+                //                Les 16 ennemis
+                //                Éventuellement je vais faire traverser mes ennemis vivant au début 
+                //                du tableau et sorter seulement les premiers
+                for (int i = 0; i < 16; i++)
+                {
+                    int missileIndividuel = 0;
+                    if (ennemi[i].estVivant)
+                    {
+                        ennemi[i].ThisRotation(angle[225], angle[240], "xSlowLeftYSlowUp");
+                    }
+                }
+            }
+            else if (hero.angleRotation >= angle[240] && hero.angleRotation < angle[315])
+            {
+                fond.ThisRotation(angle[240], angle[315], "xNoYHighUp");
+                //                Les 16 ennemis
+                //                Éventuellement je vais faire traverser mes ennemis vivant au début 
+                //                du tableau et sorter seulement les premiers
+                for (int i = 0; i < 16; i++)
+                {
+                    int missileIndividuel = 0;
+                    if (ennemi[i].estVivant)
+                    {
+                        ennemi[i].ThisRotation(angle[240], angle[315], "xNoYHighUp");
+                    }
+                }
+            }
+            else if (hero.angleRotation >= angle[315] && hero.angleRotation < angle[330])
+            {
+                fond.ThisRotation(angle[315], angle[330], "xSlowLeftYSlowUp");
+                //                Les 16 ennemis
+                //                Éventuellement je vais faire traverser mes ennemis vivant au début 
+                //                du tableau et sorter seulement les premiers
+                for (int i = 0; i < 16; i++)
+                {
+                    int missileIndividuel = 0;
+                    if (ennemi[i].estVivant)
+                    {
+                        ennemi[i].ThisRotation(angle[315], angle[330], "xSlowRightYSlowUp");
+                    }
+                }
+            }
+            // Nouvelle condition car elle existe aussi dans les conditions précédentes
+            if (hero.angleRotation >= angle[330] && hero.angleRotation < angle[359])
+            {
+                fond.ThisRotation(angle[330], angle[359], "xHighRigthYNo");
+                //                Les 16 ennemis
+                //                Éventuellement je vais faire traverser mes ennemis vivant au début 
+                //                du tableau et sorter seulement les premiers
+                for (int i = 0; i < 16; i++)
+                {
+                    int missileIndividuel = 0;
+                    if (ennemi[i].estVivant)
+                    {
+                        ennemi[i].ThisRotation(angle[330], angle[359], "xHighRigthYNo");
+                    }
+                }
+            }
+        }
 
         public void UpdateFond()
         {
-            if (fond.origine.X < fenetre.Height/2)
+            if (fond.origine.X < 0 + fenetre.Width/2)
             {
-                fond.origine.X = fenetre.Height/2;
+                fond.origine.X = (fenetre.Width/2);
+                // On tourne pour éviter l'arrêt
+                if (hero.angleRotation>=angle[180])
+                {
+                     hero.angleRotation++;
+                }
+                else
+                {
+                    hero.angleRotation--;
+                }
+               
+                // On réduit la vitesse
+                fond.vitesse.X = 0.03f;
             }
-            else if (fond.origine.X > fond.sprite.Width - (fenetre.Height/2))
+            else if (fond.origine.X > fond.sprite.Width - (fenetre.Width / 2))
             {
-                fond.origine.X = fond.sprite.Width - fenetre.Height/2;
+                fond.origine.X = fond.sprite.Width - (fenetre.Width / 2);
+                // On réduit la vitesse
+                fond.vitesse.X = 0;
             }
-            if (fond.origine.Y < fenetre.Height/2)
+            if (fond.origine.Y < 0 + (fenetre.Height / 2))
             {
-                fond.origine.Y = fenetre.Height/2;
+                fond.origine.Y = (fenetre.Height / 2);
+                // On réduit la vitesse
+                fond.vitesse.Y = 0;
             }
-            else if (fond.origine.Y > fond.sprite.Height - fenetre.Height/2)
+            else if (fond.origine.Y > fond.sprite.Height - (fenetre.Height / 2))
             {
-                fond.origine.Y = fond.sprite.Height - fenetre.Height/2;
+                fond.origine.Y = fond.sprite.Height - (fenetre.Height / 2);
+                // On réduit la vitesse
+                fond.vitesse.Y = 0;
             }
 
-            // Rétablir le compteur de rotation après un tour complet
-            if (fond.angleRotation > 6.2832f)
-            {
-                fond.angleRotation = 0f;
-            }
-            else if (fond.angleRotation < -6.2832f)
-            {
-                fond.angleRotation = 0f;
-            }
+           
         }
 
         public void UpdateHero()
         {
-            hero.InScreen(fenetre);
+            //hero.InScreen(fenetre,limiteMinY,limiteMaxY,limiteMinX, limiteMaxX);
+            // Rétablir le compteur de rotation après un tour complet
+            if (hero.angleRotation > 6.2832f)
+            {
+                hero.angleRotation = 0f;
+            }
+            else if (hero.angleRotation < 0)
+            {
+                hero.angleRotation = 6.2832f;
+            }
         }
 
         public void UpdateNuages(int direction)
@@ -547,23 +638,27 @@ namespace Projet_02
                 ennemi[i].InScreen(fenetre);
                 float[] progression = new float[4];
                 float quelleProgression = 0;
-                
-                 progression[0] =  0.05f; 
+                float maxVitesse = 1f;
+                progression[0] =  0.03f; 
                 progression[1] = 0.02f;
-                progression[2] = 0.00f;
-                progression[3] = -0.01f;
+                progression[2] = -0.01f;
+                progression[3] = -0.02f;
                 quelleProgression = progression[nombre.Next(0,4)];
 
                 if (ennemi[i].position.X > hero.position.X)
                 {
+
                     ennemi[i].vitesse.X -= quelleProgression;
                     ennemi[i].angleRotation = 3.1416f;
                 }
                 else
                 {
-                    ennemi[i].vitesse.X += quelleProgression ;
+
+                    ennemi[i].vitesse.X += quelleProgression;
                     ennemi[i].angleRotation = 0f;
                 }
+                // on rebrasse en Y
+                quelleProgression = progression[nombre.Next(0, 4)];
                 if (ennemi[i].position.Y > hero.position.Y)
                 {
                     ennemi[i].vitesse.Y -= quelleProgression;
@@ -760,6 +855,10 @@ namespace Projet_02
             spriteBatch.Draw(fond.sprite, fond.position, null,  Color.White,
                 fond.angleRotation,fond.origine,1.0f, SpriteEffects.None,0f);
 
+            // La miniature
+            spriteBatch.Draw(fond.sprite, new Vector2(10,10), null, Color.White,
+                fond.angleRotation, fondMiniature.origine, 0.050f, SpriteEffects.None, 0f);
+
             // Le barre
             spriteBatch.Draw(barre.sprite, barre.position, null, Color.White,
                 fond.angleRotation, barre.origine, 2.0f, SpriteEffects.None, 0f);
@@ -817,7 +916,14 @@ namespace Projet_02
             // Écrire le message du Game Over
             //            else if (tempsActuel - tempsFrappe > 5 && gameOver == true) //  si 5 seconde se sont écoulés depuis gameOver
             //            {
-            message = "Temps de la partie : " + tempsActuel +  " secondes \nVotre rotation est de " + fond.angleRotation + "( en float )";
+            //message = "Temps de la partie : " + tempsActuel +  " secondes \nVotre rotation est de " + hero.angleRotation + "( en float )";
+            message = "Limite Min en X = " + limiteMinX;
+            message += "\nLimite Max X = " + limiteMaxX;
+            message += "\nLimite Min en Y = " + limiteMinY;
+            message += "\nLimite Maxen Y = " + limiteMaxY;
+            message += "\nLargeur de la Maquette = " +fond.sprite.Width;
+            message += "\n Hauteur de la fenetre = " + fond.sprite.Height;
+
             spriteBatch.DrawString(font, message, new Vector2(100, 100), Color.Black);
             //Exit();
             //            }

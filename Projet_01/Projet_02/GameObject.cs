@@ -17,6 +17,7 @@ namespace Projet_02
         public bool estTireur;
         public bool directionChange;
         public float angleRotation;
+        public string tag;
 
         public Vector2 position;
         public Vector2 origine;
@@ -48,35 +49,175 @@ namespace Projet_02
 
         public void InScreen(Rectangle cetteFenetre)
         {
-            if (this.position.X - (this.origine.X) < 0)
+            float facteurPermis = 1.25f;
+            float minX, maxX, minY, maxY;
+            // On sort de l'écran en bas d'un facteur de 1
+            minX = 0 - cetteFenetre.Width * (facteurPermis-1);
+            maxX = cetteFenetre.Width * facteurPermis;
+            minY = 0 - cetteFenetre.Height * (facteurPermis-1);
+            maxY =  cetteFenetre.Height * facteurPermis;
+            if (this.position.X <  minX)
             {
-                this.position.X = 0 + (this.origine.X);
+                this.position.X =  minX;
             }
-            else if (this.position.X + (this.origine.X) > cetteFenetre.Width)
+            else if (this.position.X  > maxX)
             {
-                this.position.X = cetteFenetre.Width - this.origine.X;
+                this.position.X = maxX;
             }
 
-            if (this.position.Y - this.origine.Y < 0)
+            if (this.position.Y < minY)
             {
-                this.position.Y = 0 + this.origine.Y;
+                this.position.Y =minY;
             }
-            else if(this.position.Y + this.origine.Y > cetteFenetre.Height)
+            else if (this.position.Y > maxY)
             {
-                this.position.Y = cetteFenetre.Height - this.origine.Y;
+                this.position.Y = maxY;
             }
         }
 
-        public void ThisRotation(float min ,float max, float vitesseX, float vitesseY)
+        public void ThisRotation(float min ,float max, String vitesse)
         {
-            if (min >= 0 && max > 0) // valeurs positives
+            float vitesseLente = 0.03f;
+            float vitesseRapide = 0.07f;
+            int pCentEnnemi = 100; // pourcentage l'ennemi en rapport avec le fond
+
+            switch (vitesse)
             {
-                if (this.angleRotation >= min && this.angleRotation < max)
-                {
-                    this.vitesse.Y += vitesseY;
-                    this.vitesse.X += vitesseX;
-                }
+                case "xHighLeftYNo":
+                    if (this.tag == "ennemi")
+                    {  
+                        this.vitesse.X += (vitesseRapide * pCentEnnemi / 100);
+                    }
+                    else
+                    {
+
+                        this.vitesse.X -= vitesseRapide;
+                    }
+                    break;
+                case "xNoYHighUp":
+                    if (this.tag == "ennemi")
+                    {
+                        this.vitesse.Y += (vitesseRapide*pCentEnnemi/100);
+                    }
+                    else
+                    {
+                       
+                        this.vitesse.Y -= vitesseRapide;
+                    }
+                   break; 
+                case "xSlowLeftYSlowUp":
+                    if (this.tag == "ennemi")
+                    {
+                        this.vitesse.X += vitesseLente * pCentEnnemi / 100;
+                        this.vitesse.Y += vitesseLente * pCentEnnemi / 100;
+                        
+                    }
+                    else
+                    {
+                        this.vitesse.X -= vitesseLente;
+                        this.vitesse.Y -= vitesseLente;
+                    }
+                    break;
+                case "xSlowLeftYNo":
+                    if (this.tag == "ennemi")
+                    {
+                        this.vitesse.X += vitesseLente * pCentEnnemi / 100;
+                       
+                    }
+                    else
+                    {
+                        this.vitesse.X -= vitesseLente;
+                    }
+                    break;
+                case "xSlowLeftYSlowDown":
+                    if (this.tag == "ennemi")
+                    {
+                        this.vitesse.X += vitesseLente * pCentEnnemi / 100;
+                        //*******************************************************
+                        // Le vent tourne de bord pour les ennemis
+                        // Quand j'avance en descandant, ils doivent descendre dans l'écran
+                        this.vitesse.Y += vitesseLente * pCentEnnemi / 100;
+                    }
+                    else
+                    {
+                        this.vitesse.X -= vitesseLente;
+                        this.vitesse.Y += vitesseLente;
+                    }
+                    break;
+                case "xNoYHighDown":
+                    if (this.tag == "ennemi")
+                    {
+                        
+                        this.vitesse.Y -= vitesseRapide * pCentEnnemi / 100;
+
+                    }
+                    else
+                    {
+                        
+                        this.vitesse.Y += vitesseRapide;
+                    }
+                    break;
+                case "xSlowRightYSlowDown":
+                    if (this.tag == "ennemi")
+                    {
+
+                        this.vitesse.X -= vitesseLente * pCentEnnemi / 100;
+                        this.vitesse.Y -= vitesseLente * pCentEnnemi / 100;
+
+                    }
+                    else
+                    {
+
+                        this.vitesse.X += vitesseLente;
+                        this.vitesse.Y += vitesseLente;
+                    }
+                    break;
+                case "xHighRightYno":
+                    if (this.tag == "ennemi")
+                    {
+                        this.vitesse.X -= vitesseRapide* pCentEnnemi / 100;
+                    }
+                    else
+                    {
+
+                        this.vitesse.X += vitesseRapide;
+                       
+                    }
+                    break;
+                case "xSlowRightYSlowUp":
+                    if (this.tag == "ennemi")
+                    {
+
+                        this.vitesse.X -= vitesseLente * pCentEnnemi / 100;
+                        this.vitesse.Y += vitesseLente * pCentEnnemi / 100;
+
+                    }
+                    else
+                    {
+
+                        this.vitesse.X += vitesseLente;
+                        this.vitesse.Y -= vitesseLente;
+                    }
+                    break;
+
+
             }
+
+
+            //if (this.angleRotation >= min && this.angleRotation < max)
+            //{
+            //    if (this.tag == "ennemi")
+            //    {
+            //        this.vitesse.Y += vitesseY - (vitesseY * 80 / 100);
+            //        this.vitesse.X += vitesseX - (vitesseX * 80 / 100);
+            //    }
+            //    else
+            //    {
+            //        this.vitesse.Y += vitesseY;
+            //        this.vitesse.X += vitesseX;
+            //    }
+                    
+            //}
         }
 
     }
