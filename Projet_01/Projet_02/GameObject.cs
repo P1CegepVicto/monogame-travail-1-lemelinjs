@@ -16,6 +16,7 @@ namespace Projet_02
         public bool isLaunched;
         public bool estTireur;
         public bool directionChange;
+        public bool dansEcran;
         public float angleRotation;
         public string tag;
 
@@ -47,34 +48,79 @@ namespace Projet_02
             return collisionHappen;
         }
 
-        public void InScreen(Rectangle cetteFenetre)
+        public void InMaquette(Rectangle cetteMaquette, Rectangle cetteFenetre, 
+            float margeX, float margeY)
         {
-            float facteurPermis = 1.25f;
+            float facteurPermis = 1f;
             float minX, maxX, minY, maxY;
             // On sort de l'écran en bas d'un facteur de 1
-            minX = 0 - cetteFenetre.Width * (facteurPermis-1);
-            maxX = cetteFenetre.Width * facteurPermis;
-            minY = 0 - cetteFenetre.Height * (facteurPermis-1);
-            maxY =  cetteFenetre.Height * facteurPermis;
+            minX = (cetteFenetre.Width/2)-margeX ;
+            maxX = cetteMaquette.Width - margeX + cetteFenetre.Width/2;
+            minY = (cetteFenetre.Height / 2)-margeY;
+            maxY = cetteMaquette.Height - margeY + cetteFenetre.Height/2;
             if (this.position.X <  minX)
             {
                 this.position.X =  minX;
+                this.vitesse.X = 0;
             }
             else if (this.position.X  > maxX)
             {
                 this.position.X = maxX;
+                this.vitesse.X = 0;
             }
 
             if (this.position.Y < minY)
             {
                 this.position.Y =minY;
+                this.vitesse.Y = 0;
             }
             else if (this.position.Y > maxY)
             {
                 this.position.Y = maxY;
+                this.vitesse.Y = 0;
             }
         }
+        public void InScreen(Rectangle cetteFenetre)
+        {
+            float facteurPermis = 1f;
+            float minX, maxX, minY, maxY;
+            // On sort de l'écran en bas d'un facteur de 1
+            minX = 0 - cetteFenetre.Width * (facteurPermis - 1);
+            maxX = cetteFenetre.Width * facteurPermis;
+            minY = 0 - cetteFenetre.Height * (facteurPermis - 1);
+            maxY = cetteFenetre.Height * facteurPermis;
+            if (this.position.X < minX)
+            {
+                this.position.X = minX;
+                this.vitesse.X = 0;
+            }
+            else if (this.position.X > maxX)
+            {
+                this.position.X = maxX;
+                this.vitesse.X = 0;
+            }
 
+            if (this.position.Y < minY)
+            {
+                this.position.Y = minY;
+                this.vitesse.Y = 0;
+            }
+            else if (this.position.Y > maxY)
+            {
+                this.position.Y = maxY;
+                this.vitesse.Y = 0;
+            }
+        }
+        public void EnnemiDansEcran(Rectangle cetteFenetre)
+        {
+            if (this.position.X > 0 && this.position.X < cetteFenetre.Width )
+            {
+                if (this.position.Y > 0 && this.position.Y < cetteFenetre.Height)
+                {
+                    this.dansEcran = true;
+                }
+            }
+        }
         public void ThisRotation(float min ,float max, String vitesse)
         {
             float vitesseLente = 0.03f;
