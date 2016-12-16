@@ -125,14 +125,14 @@ namespace Projet_02
         {
             float vitesseLente = 0.03f;
             float vitesseRapide = 0.07f;
-            int pCentEnnemi = 100; // pourcentage l'ennemi en rapport avec le fond
+            int pCentEnnemi = 30; // pourcentage l'ennemi en rapport avec le fond
 
             switch (vitesse)
             {
                 case "xHighLeftYNo":
                     if (this.tag == "ennemi")
-                    {  
-                        this.vitesse.X += (vitesseRapide * pCentEnnemi / 100);
+                    {
+                            this.vitesse.X += (vitesseRapide * pCentEnnemi / 100); 
                     }
                     else
                     {
@@ -179,10 +179,7 @@ namespace Projet_02
                     if (this.tag == "ennemi")
                     {
                         this.vitesse.X += vitesseLente * pCentEnnemi / 100;
-                        //*******************************************************
-                        // Le vent tourne de bord pour les ennemis
-                        // Quand j'avance en descandant, ils doivent descendre dans l'écran
-                        this.vitesse.Y += vitesseLente * pCentEnnemi / 100;
+                        this.vitesse.Y -= vitesseLente * pCentEnnemi / 100;
                     }
                     else
                     {
@@ -221,16 +218,33 @@ namespace Projet_02
                 case "xHighRightYno":
                     if (this.tag == "ennemi")
                     {
-                        this.vitesse.X -= vitesseRapide* pCentEnnemi / 100;
+                      
+                            this.vitesse.X -= (vitesseRapide * pCentEnnemi / 100);
+                
                     }
                     else
                     {
 
                         this.vitesse.X += vitesseRapide;
-                       
+
+                    }
+                    break;
+                case "xHighRightYNo1":
+                    if (this.tag == "ennemi")
+                    {
+
+                        this.vitesse.X -= (vitesseRapide * pCentEnnemi / 100);
+
+                    }
+                    else
+                    {
+
+                        this.vitesse.X += vitesseRapide;
+
                     }
                     break;
                 case "xSlowRightYSlowUp":
+
                     if (this.tag == "ennemi")
                     {
 
